@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voyage</title>
+    <meta
+      name="description"
+      content="Voyage is a minimalist travel planning app with date inputs, preferences, and a discovery board for inspired trip planning."
+    />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Pharmacist-Guide / voyage</p>
+          <h1>Simple trip planning, designed to inspire the next departure.</h1>
+        </div>
+        <p class="topbar-copy">
+          A separate travel workspace with a minimalist interface, elevated photography,
+          and calm structure for planning time away.
+        </p>
+      </header>
+
+      <main>
+        <section class="hero">
+          <article class="hero-copy card">
+            <p class="section-label">Travel planning</p>
+            <h2>Find the shape of a trip before the details get noisy.</h2>
+            <p>
+              Start with dates, tune the feel of the trip, and browse a small board of places
+              that spark momentum.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#planner" class="primary-link">Plan a trip</a>
+              <a href="#discovery" class="secondary-link">Browse destinations</a>
+            </div>
+
+            <div class="stat-row">
+              <div>
+                <span class="stat-value">6</span>
+                <span class="stat-label">days away</span>
+              </div>
+              <div>
+                <span class="stat-value">3</span>
+                <span class="stat-label">styles selected</span>
+              </div>
+              <div>
+                <span class="stat-value">12</span>
+                <span class="stat-label">saved ideas</span>
+              </div>
+            </div>
+          </article>
+
+          <aside class="hero-visual card">
+            <div class="visual-image"></div>
+            <div class="visual-overlay">
+              <p>Featured inspiration</p>
+              <h3>Sunlit coastlines, slow mornings, and enough room to wander.</h3>
+            </div>
+          </aside>
+        </section>
+
+        <section class="planner" id="planner">
+          <article class="card planner-panel">
+            <div class="section-header">
+              <div>
+                <p class="section-label">Date inputs</p>
+                <h2>Choose the window for the trip.</h2>
+              </div>
+              <p class="mini-copy">A clean starting point for departure, return, and trip length.</p>
+            </div>
+
+            <div class="input-grid">
+              <label>
+                <span>Depart</span>
+                <input id="depart-date" type="date" />
+              </label>
+              <label>
+                <span>Return</span>
+                <input id="return-date" type="date" />
+              </label>
+              <label>
+                <span>Trip length</span>
+                <input type="text" placeholder="5 nights" value="5 nights" />
+              </label>
+            </div>
+          </article>
+
+          <article class="card planner-panel">
+            <div class="section-header">
+              <div>
+                <p class="section-label">Preferences</p>
+                <h2>Shape the trip feel.</h2>
+              </div>
+              <p class="mini-copy">Pick a few qualities to guide the discovery board.</p>
+            </div>
+
+            <div class="chip-list" id="preference-chips">
+              <button class="chip is-active" type="button">Relaxed pace</button>
+              <button class="chip" type="button">Coastal views</button>
+              <button class="chip" type="button">Great food</button>
+              <button class="chip" type="button">Quiet stays</button>
+              <button class="chip" type="button">Walkable city</button>
+              <button class="chip" type="button">Outdoors first</button>
+            </div>
+
+            <div class="preference-footer">
+              <p class="mini-copy" id="preference-summary">Selected: Relaxed pace, Coastal views, Great food.</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="discovery" id="discovery">
+          <div class="section-header board-header">
+            <div>
+              <p class="section-label">Discovery board</p>
+              <h2>Places worth opening next.</h2>
+            </div>
+            <p class="mini-copy">
+              A light board of destinations with imagery, mood, and a few quick tags.
+            </p>
+          </div>
+
+          <div class="board-grid">
+            <article class="destination-card card">
+              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80');"></div>
+              <div class="destination-copy">
+                <div>
+                  <p class="destination-name">Kyoto</p>
+                  <p class="destination-detail">Temples, calm streets, and tea-house pauses.</p>
+                </div>
+                <div class="tag-row">
+                  <span>quiet</span>
+                  <span>culture</span>
+                  <span>walkable</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="destination-card card">
+              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80');"></div>
+              <div class="destination-copy">
+                <div>
+                  <p class="destination-name">Amalfi Coast</p>
+                  <p class="destination-detail">Coastal views, long lunches, and open water.</p>
+                </div>
+                <div class="tag-row">
+                  <span>coast</span>
+                  <span>food</span>
+                  <span>sunset</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="destination-card card">
+              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80');"></div>
+              <div class="destination-copy">
+                <div>
+                  <p class="destination-name">Maui</p>
+                  <p class="destination-detail">Wide horizons, slow mornings, and water everywhere.</p>
+                </div>
+                <div class="tag-row">
+                  <span>island</span>
+                  <span>relaxed</span>
+                  <span>swim</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="destination-card card">
+              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');"></div>
+              <div class="destination-copy">
+                <div>
+                  <p class="destination-name">Patagonia</p>
+                  <p class="destination-detail">Big landscapes, sharp air, and room to move.</p>
+                </div>
+                <div class="tag-row">
+                  <span>outdoors</span>
+                  <span>hike</span>
+                  <span>remote</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
