@@ -6,7 +6,7 @@
     <title>Voyage</title>
     <meta
       name="description"
-      content="Voyage is a minimalist travel planning app with a hero search experience, flexible dates, and discovery for inspired trip planning."
+      content="Voyage is a minimalist travel planning app with flexible search tools, trip-type selectors, and premium travel inspiration."
     />
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link rel="stylesheet" href="styles.css" />
@@ -73,6 +73,48 @@
                 </label>
               </div>
 
+              <div class="search-field">
+                <span>Trip type</span>
+                <div class="trip-type-grid" id="trip-type-group" role="group" aria-label="Trip type selectors">
+                  <button class="trip-type is-active" type="button" data-trip-type="Flight + Hotel">Flight + Hotel</button>
+                  <button class="trip-type" type="button" data-trip-type="Cruise">Cruise</button>
+                  <button class="trip-type" type="button" data-trip-type="Flight + Hotel + Cruise">Flight + Hotel + Cruise</button>
+                  <button class="trip-type" type="button" data-trip-type="Complete Travel Planning">Complete Travel Planning</button>
+                </div>
+                <p class="field-note" id="trip-type-summary">Trip type: Flight + Hotel.</p>
+              </div>
+
+              <div class="date-window card-inner">
+                <div class="departure-header">
+                  <div>
+                    <p class="mini-kicker">Need to go / can go</p>
+                    <h3>Define the date window manually.</h3>
+                  </div>
+                  <p class="mini-copy">A flexibility control helps broaden or tighten the search.</p>
+                </div>
+
+                <div class="details-grid date-grid">
+                  <label class="search-field">
+                    <span>Need to go</span>
+                    <input id="need-to-go" type="date" />
+                    <small>Harder starting point</small>
+                  </label>
+                  <label class="search-field">
+                    <span>Can go</span>
+                    <input id="can-go" type="date" />
+                    <small>Latest acceptable departure</small>
+                  </label>
+                  <label class="search-field search-field-wide">
+                    <span>Flexibility</span>
+                    <div class="flex-wrap">
+                      <input id="flexibility" type="range" min="0" max="100" value="65" />
+                      <span class="flex-value" id="flexibility-value">Flexible</span>
+                    </div>
+                    <small>Slider for tighter or looser date matching</small>
+                  </label>
+                </div>
+              </div>
+
               <div class="departure-card">
                 <div class="departure-header">
                   <div>
@@ -125,6 +167,58 @@
                   </label>
                 </div>
               </div>
+
+              <section class="feature-grid">
+                <article class="feature-card">
+                  <div class="feature-copy">
+                    <p class="mini-kicker">Quick Escape</p>
+                    <h3>I'm off [X] days in a row, where can I go?</h3>
+                    <p>
+                      A fast-path search that reframes the trip around available time and lets the app
+                      surface short, high-value escapes.
+                    </p>
+                  </div>
+                  <div class="feature-controls">
+                    <label class="search-field">
+                      <span>Off for</span>
+                      <input id="off-days" type="text" inputmode="numeric" value="4" />
+                      <small>Days in a row</small>
+                    </label>
+                    <button class="mini-button" type="button" id="quick-escape-button">Quick Escape</button>
+                  </div>
+                  <p class="field-note" id="quick-escape-status">Ready to suggest compact, well-priced trip ideas.</p>
+                </article>
+
+                <article class="feature-card">
+                  <div class="feature-copy">
+                    <p class="mini-kicker">Specific Goal</p>
+                    <h3>Choose a destination and let the app find the best slots.</h3>
+                    <p>
+                      Pick a place like Key West, set allowed PTO days, and review overlap-aware windows.
+                    </p>
+                  </div>
+                  <div class="details-grid goal-grid">
+                    <label class="search-field search-field-wide">
+                      <span>Destination goal</span>
+                      <input id="goal-destination" type="text" placeholder="Key West" value="Key West" />
+                      <small>Specific destination target</small>
+                    </label>
+                    <label class="search-field">
+                      <span>Allowed PTO days</span>
+                      <input id="goal-pto" type="text" inputmode="numeric" placeholder="3" value="3" />
+                      <small>Days available for time off</small>
+                    </label>
+                    <label class="search-field">
+                      <span>Calendar source</span>
+                      <input type="text" value="Meridian / Atlas calendar check" readonly />
+                      <small>Live overlap checks require the connected calendar layer</small>
+                    </label>
+                  </div>
+                  <div class="goal-results" id="goal-results">
+                    Suggested slots will appear here after overlap checks.
+                  </div>
+                </article>
+              </section>
 
               <div class="search-actions">
                 <button class="search-button" type="button" id="search-button">

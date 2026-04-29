@@ -6,10 +6,16 @@ Voyage is a separate travel-planning site for Zachary.
 
 - Hero-centered search experience
 - Anywhere destination option for open-ended, well-priced trips
-- Trip length range input
-- Multiple possible departure-date selections
+- Trip type selectors for flight, cruise, or combined planning
+- Manual date window inputs with flexibility control
+- Multiple departure-date selections
 - Trip detail fields for budget, travelers, ports, and cruise line preferences
+- Quick Escape and Specific Goal modules
 - Minimalist travel imagery and discovery board
+
+## Notes
+
+The Specific Goal module is scaffolded to reflect Meridian / Atlas calendar overlap checking, but live calendar access still requires the connected integration layer.
 
 ## Local preview
 
