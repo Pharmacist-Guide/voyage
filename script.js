@@ -1,9 +1,7 @@
 const destinationButtons = Array.from(document.querySelectorAll('.destination-pill'));
 const tripTypeButtons = Array.from(document.querySelectorAll('.trip-type'));
-const dateButtons = Array.from(document.querySelectorAll('.date-pill'));
 const destinationSummary = document.getElementById('destination-summary');
 const tripTypeSummary = document.getElementById('trip-type-summary');
-const departureSummary = document.getElementById('departure-summary');
 const searchStatus = document.getElementById('search-status');
 const quickEscapeStatus = document.getElementById('quick-escape-status');
 const goalResults = document.getElementById('goal-results');
@@ -23,9 +21,19 @@ const goalDestination = document.getElementById('goal-destination');
 const goalPto = document.getElementById('goal-pto');
 const needToGo = document.getElementById('need-to-go');
 const canGo = document.getElementById('can-go');
+const departureInput = document.getElementById('departure-date-input');
+const addDepartureButton = document.getElementById('add-departure-date');
+const departurePills = document.getElementById('departure-pills');
+const departureSummary = document.getElementById('departure-summary');
 
 const toISODate = (date) => date.toISOString().slice(0, 10);
 const formatShortDate = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const formatSelectedDate = (value) => {
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? value : formatShortDate(date);
+};
+
+const selectedDepartureDates = new Set();
 
 const today = new Date();
 const needDate = new Date(today);
@@ -34,6 +42,9 @@ const canDate = new Date(today);
 canDate.setDate(canDate.getDate() + 56);
 needToGo.value = toISODate(needDate);
 canGo.value = toISODate(canDate);
+
+departureInput.value = toISODate(new Date(today));
+selectedDepartureDates.add(departureInput.value);
 
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
@@ -48,9 +59,36 @@ const syncTripType = () => {
   tripTypeSummary.textContent = `Trip type: ${active?.dataset.tripType ?? 'Flight + Hotel'}.`;
 };
 
-const syncDates = () => {
-  const selected = dateButtons.filter((button) => button.classList.contains('is-active')).map((button) => button.textContent.trim());
-  departureSummary.textContent = selected.length > 0 ? `Selected departure dates: ${selected.join(', ')}.` : 'Selected departure dates: none.';
+const syncDepartureSummary = () => {
+  const sorted = Array.from(selectedDepartureDates).sort();
+  departureSummary.textContent = sorted.length
+    ? `Selected departure dates: ${sorted.map(formatSelectedDate).join(', ')}.`
+    : 'No departure dates added yet.';
+};
+
+const renderDeparturePills = () => {
+  departurePills.innerHTML = '';
+  Array.from(selectedDepartureDates).sort().forEach((date) => {
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'date-pill is-active';
+    pill.textContent = formatSelectedDate(date);
+    pill.dataset.value = date;
+    pill.addEventListener('click', () => {
+      selectedDepartureDates.delete(date);
+      renderDeparturePills();
+      syncDepartureSummary();
+    });
+    departurePills.appendChild(pill);
+  });
+};
+
+const addDepartureDate = () => {
+  const value = departureInput.value;
+  if (!value) return;
+  selectedDepartureDates.add(value);
+  renderDeparturePills();
+  syncDepartureSummary();
 };
 
 const normalizeRange = () => {
@@ -70,7 +108,7 @@ const updateFlexibilityLabel = () => {
 const buildSearchSummary = () => {
   const destination = destinationButtons.find((button) => button.classList.contains('is-active'))?.dataset.destination ?? 'Anywhere';
   const tripType = tripTypeButtons.find((button) => button.classList.contains('is-active'))?.dataset.tripType ?? 'Flight + Hotel';
-  const dates = dateButtons.filter((button) => button.classList.contains('is-active')).map((button) => button.textContent.trim());
+  const dates = Array.from(selectedDepartureDates).sort().map(formatSelectedDate);
   const minDays = lengthMin.value.trim() || '7';
   const maxDays = lengthMax.value.trim() || '14';
   const query = searchQuery.value.trim() || 'Well-priced, inspiring trips';
@@ -80,7 +118,7 @@ const buildSearchSummary = () => {
   const lines = cruiseLines.value.trim() || 'Flexible cruise lines';
   return [
     `Searching ${destination.toLowerCase()} for ${query.toLowerCase()} (${tripType.toLowerCase()}).`,
-    `Dates: ${dates.slice(0, 3).join(', ')}${dates.length > 3 ? '…' : ''}.`,
+    `Departure dates: ${dates.length ? dates.join(', ') : 'none selected'}.`,
     `Length: ${minDays}-${maxDays} days · Budget: ${budget} · Travelers: ${travelers}.`,
     `Ports: ${ports}. Lines: ${lines}.`,
   ].join(' ');
@@ -102,54 +140,60 @@ const buildGoalCheck = () => {
   return `Goal search for ${destination}: ${pto} PTO days, ${windowText}, ${overlapState}. Live Meridian / Atlas calendar overlap checks need the connected calendar layer.`;
 };
 
-function updateAll() {
-  syncDestination();
-  syncTripType();
-  syncDates();
-  updateFlexibilityLabel();
-  searchStatus.textContent = buildSearchSummary();
-  quickEscapeStatus.textContent = buildQuickEscape();
-  goalResults.textContent = buildGoalCheck();
-}
-
-destinationButtons.forEach((button) => button.addEventListener('click', () => {
-  destinationButtons.forEach((item) => item.classList.remove('is-active'));
-  button.classList.add('is-active');
-  syncDestination();
-  searchStatus.textContent = buildSearchSummary();
-}));
-tripTypeButtons.forEach((button) => button.addEventListener('click', () => {
-  tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
-  button.classList.add('is-active');
-  syncTripType();
-  searchStatus.textContent = buildSearchSummary();
-}));
-dateButtons.forEach((button) => button.addEventListener('click', () => {
-  button.classList.toggle('is-active');
-  if (dateButtons.every((item) => !item.classList.contains('is-active'))) button.classList.add('is-active');
-  syncDates();
-  searchStatus.textContent = buildSearchSummary();
-}));
-[lengthMin, lengthMax].forEach((input) => {
-  input.addEventListener('change', normalizeRange);
-  input.addEventListener('blur', normalizeRange);
-  input.addEventListener('input', () => { searchStatus.textContent = buildSearchSummary(); });
-});
-[searchQuery, maxBudget, travelerCount, preferredPorts, cruiseLines, goalDestination, goalPto, needToGo, canGo].forEach((input) => {
-  input.addEventListener('input', () => {
-    searchStatus.textContent = buildSearchSummary();
-    goalResults.textContent = buildGoalCheck();
+destinationButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    destinationButtons.forEach((item) => item.classList.remove('is-active'));
+    button.classList.add('is-active');
+    syncDestination();
   });
 });
-flexibility.addEventListener('input', () => {
-  updateFlexibilityLabel();
-  goalResults.textContent = buildGoalCheck();
+tripTypeButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
+    button.classList.add('is-active');
+    syncTripType();
+  });
 });
+
 searchButton.addEventListener('click', () => {
+  searchButton.classList.add('is-active');
   searchStatus.textContent = buildSearchSummary();
 });
 quickEscapeButton.addEventListener('click', () => {
   quickEscapeStatus.textContent = buildQuickEscape();
 });
+addDepartureButton.addEventListener('click', addDepartureDate);
+departureInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addDepartureDate();
+  }
+});
+[lengthMin, lengthMax].forEach((input) => {
+  input.addEventListener('change', normalizeRange);
+  input.addEventListener('blur', normalizeRange);
+});
+flexibility.addEventListener('input', () => {
+  updateFlexibilityLabel();
+  goalResults.textContent = buildGoalCheck();
+});
+[searchQuery, maxBudget, travelerCount, preferredPorts, cruiseLines, offDays, goalDestination, goalPto, needToGo, canGo].forEach((input) => {
+  input.addEventListener('input', () => {
+    searchStatus.textContent = buildSearchSummary();
+    quickEscapeStatus.textContent = buildQuickEscape();
+    goalResults.textContent = buildGoalCheck();
+  });
+});
 
-updateAll();
+function boot() {
+  syncDestination();
+  syncTripType();
+  updateFlexibilityLabel();
+  renderDeparturePills();
+  syncDepartureSummary();
+  searchStatus.textContent = buildSearchSummary();
+  quickEscapeStatus.textContent = buildQuickEscape();
+  goalResults.textContent = buildGoalCheck();
+}
+
+boot();
