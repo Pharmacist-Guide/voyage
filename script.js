@@ -1,6 +1,7 @@
 const destinationButtons = Array.from(document.querySelectorAll('.destination-pill'));
 const tripTypeButtons = Array.from(document.querySelectorAll('.trip-type'));
 const modeButtons = Array.from(document.querySelectorAll('.mode-pill'));
+const snipTargets = Array.from(document.querySelectorAll('.selectable-snip'));
 const destinationSummary = document.getElementById('destination-summary');
 const tripTypeSummary = document.getElementById('trip-type-summary');
 const searchStatus = document.getElementById('search-status');
@@ -28,6 +29,13 @@ const departureEndField = document.getElementById('departure-end-field');
 const addDepartureButton = document.getElementById('add-departure-date');
 const departurePills = document.getElementById('departure-pills');
 const departureSummary = document.getElementById('departure-summary');
+const bugButton = document.getElementById('bug-button');
+const bugModal = document.getElementById('bug-modal');
+const bugCloseButton = document.getElementById('bug-close-button');
+const bugSnipTarget = document.getElementById('bug-snip-target');
+const bugComment = document.getElementById('bug-comment');
+const bugSubmitButton = document.getElementById('bug-submit-button');
+const bugStatus = document.getElementById('bug-status');
 
 const toISODate = (date) => date.toISOString().slice(0, 10);
 const formatShortDate = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -38,6 +46,7 @@ const formatSelectedDate = (value) => {
 
 const selectedDepartureCriteria = [];
 let departureMode = 'date';
+let activeSnip = null;
 
 const today = new Date();
 const needDate = new Date(today);
@@ -46,6 +55,8 @@ const canDate = new Date(today);
 canDate.setDate(canDate.getDate() + 56);
 needToGo.value = toISODate(needDate);
 canGo.value = toISODate(canDate);
+departureInput.value = toISODate(new Date(today));
+selectedDepartureCriteria.push({ type: 'date', date: departureInput.value || toISODate(today) });
 
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
@@ -65,7 +76,6 @@ const syncDepartureSummary = () => {
     departureSummary.textContent = 'No departure criteria added yet.';
     return;
   }
-
   departureSummary.textContent = `Selected departure criteria: ${selectedDepartureCriteria
     .map((item) => (item.type === 'range' ? `${formatSelectedDate(item.start)} - ${formatSelectedDate(item.end)}` : formatSelectedDate(item.date)))
     .join(', ')}.`;
@@ -78,7 +88,6 @@ const renderDeparturePills = () => {
     pill.type = 'button';
     pill.className = 'date-pill is-active';
     pill.textContent = item.type === 'range' ? `${formatSelectedDate(item.start)} - ${formatSelectedDate(item.end)}` : formatSelectedDate(item.date);
-    pill.dataset.index = String(index);
     pill.addEventListener('click', () => {
       selectedDepartureCriteria.splice(index, 1);
       renderDeparturePills();
@@ -165,6 +174,46 @@ const setDepartureMode = (mode) => {
   departureEndField.classList.toggle('hidden', mode !== 'range');
 };
 
+const openBugModal = () => {
+  bugModal.classList.remove('hidden');
+  bugModal.setAttribute('aria-hidden', 'false');
+  bugStatus.textContent = activeSnip
+    ? 'Snip selected. Add your note and submit.'
+    : 'Click a card or control behind the modal to select a snip target.';
+};
+
+const closeBugModal = () => {
+  bugModal.classList.add('hidden');
+  bugModal.setAttribute('aria-hidden', 'true');
+};
+
+const serializeSnip = (element) => ({
+  label: element.dataset.snipLabel || element.getAttribute('aria-label') || element.tagName.toLowerCase(),
+  text: element.innerText.replace(/\s+/g, ' ').trim().slice(0, 700),
+});
+
+const clearSnipTargets = () => {
+  snipTargets.forEach((node) => node.classList.remove('is-snippet-target'));
+};
+
+const setActiveSnip = (element) => {
+  clearSnipTargets();
+  if (!element) return;
+  element.classList.add('is-snippet-target');
+  activeSnip = serializeSnip(element);
+  bugSnipTarget.textContent = `Selected: ${activeSnip.label}. Snippet: ${activeSnip.text}`;
+  bugStatus.textContent = 'Snip target captured. Add a comment and submit.';
+};
+
+const saveBugReport = (report) => {
+  const key = 'voyageBugReports';
+  const existing = JSON.parse(localStorage.getItem(key) || '[]');
+  existing.unshift(report);
+  localStorage.setItem(key, JSON.stringify(existing));
+  window.__atlasBugReports = existing;
+  console.log('Voyage bug report', report);
+};
+
 destinationButtons.forEach((button) => {
   button.addEventListener('click', () => {
     destinationButtons.forEach((item) => item.classList.remove('is-active'));
@@ -222,17 +271,49 @@ flexibility.addEventListener('input', () => {
   });
 });
 
+bugButton.addEventListener('click', openBugModal);
+bugCloseButton.addEventListener('click', closeBugModal);
+bugModal.addEventListener('click', (event) => {
+  if (event.target === bugModal) closeBugModal();
+});
+bugSubmitButton.addEventListener('click', () => {
+  const report = {
+    createdAt: new Date().toISOString(),
+    snip: activeSnip,
+    comment: bugComment.value.trim(),
+    page: 'voyage',
+    url: window.location.href,
+  };
+  if (!report.snip || !report.comment) {
+    bugStatus.textContent = 'Select a snip target and add a comment before submitting.';
+    return;
+  }
+  saveBugReport(report);
+  bugStatus.textContent = 'Bug report saved locally for Atlas retrieval.';
+  bugComment.value = '';
+  activeSnip = null;
+  clearSnipTargets();
+  bugSnipTarget.textContent = 'No snip selected yet.';
+});
+
+snipTargets.forEach((target) => {
+  target.addEventListener('click', () => {
+    if (bugModal.classList.contains('hidden')) return;
+    setActiveSnip(target);
+  });
+});
+
 function boot() {
   syncDestination();
   syncTripType();
   updateFlexibilityLabel();
   setDepartureMode('date');
-  selectedDepartureCriteria.push({ type: 'date', date: departureInput.value || toISODate(today) });
   renderDeparturePills();
   syncDepartureSummary();
   searchStatus.textContent = buildSearchSummary();
   quickEscapeStatus.textContent = buildQuickEscape();
   goalResults.textContent = buildGoalCheck();
+  window.__atlasBugReports = JSON.parse(localStorage.getItem('voyageBugReports') || '[]');
 }
 
 boot();

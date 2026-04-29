@@ -13,31 +13,32 @@
   </head>
   <body>
     <div class="page-shell">
-      <header class="topbar compact-topbar">
+      <header class="topbar">
         <div>
           <p class="eyebrow">Pharmacist-Guide / voyage</p>
           <h1>Voyage</h1>
         </div>
-        <p class="topbar-copy">
-          Compact travel planning with a clean, unified control center and premium imagery.
-        </p>
+        <div class="topbar-actions">
+          <p class="topbar-copy">Immersive travel discovery with a polished, high-end search console.</p>
+          <button class="ghost-button" type="button" id="bug-button">Bug</button>
+        </div>
       </header>
 
       <main>
-        <section class="dashboard card">
-          <div class="dashboard-visual">
+        <section class="hero-shell card">
+          <div class="hero-image-wrap">
             <div class="hero-media-image"></div>
             <div class="hero-media-caption">
-              <p>Travel control center</p>
-              <h2>One focused place to search, compare, and refine the trip.</h2>
+              <p>Featured atmosphere</p>
+              <h2>Bali light, temple silhouettes, and a clean turquoise horizon.</h2>
             </div>
           </div>
 
-          <div class="dashboard-controls">
+          <div class="search-console glass-card">
             <div class="control-header">
               <div>
                 <p class="section-label">Search center</p>
-                <h2>Everything the trip needs, in one compact grid.</h2>
+                <h2>Everything the trip needs, in one compact control panel.</h2>
               </div>
               <button class="search-button" type="button" id="search-button">
                 <span class="search-button-kicker">Deep travel search</span>
@@ -48,19 +49,19 @@
             <div class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</div>
 
             <div class="control-grid">
-              <section class="control-card">
+              <section class="control-card selectable-snip" data-snip-label="Destination control">
                 <p class="mini-kicker">Destination</p>
                 <div class="destination-options" role="group" aria-label="Destination options">
                   <button class="destination-pill is-active" type="button" data-destination="Anywhere">Anywhere</button>
+                  <button class="destination-pill" type="button" data-destination="Bali">Bali</button>
+                  <button class="destination-pill" type="button" data-destination="Paris">Paris</button>
+                  <button class="destination-pill" type="button" data-destination="Kauai">Kauai</button>
                   <button class="destination-pill" type="button" data-destination="Coast">Coast</button>
-                  <button class="destination-pill" type="button" data-destination="City">City</button>
-                  <button class="destination-pill" type="button" data-destination="Mountains">Mountains</button>
-                  <button class="destination-pill" type="button" data-destination="Island">Island</button>
                 </div>
                 <p class="field-note" id="destination-summary">Searching: Anywhere for random, well-priced trips.</p>
               </section>
 
-              <section class="control-card">
+              <section class="control-card selectable-snip" data-snip-label="Trip type control">
                 <p class="mini-kicker">Trip type</p>
                 <div class="trip-type-grid" id="trip-type-group" role="group" aria-label="Trip type selectors">
                   <button class="trip-type is-active" type="button" data-trip-type="Flight + Hotel">Flight + Hotel</button>
@@ -71,7 +72,7 @@
                 <p class="field-note" id="trip-type-summary">Trip type: Flight + Hotel.</p>
               </section>
 
-              <section class="control-card control-card-wide">
+              <section class="control-card control-card-wide selectable-snip" data-snip-label="Departure criteria control">
                 <div class="row-head">
                   <p class="mini-kicker">Departure criteria</p>
                   <span class="mini-copy">Add individual dates or date ranges.</span>
@@ -97,7 +98,7 @@
                 <p class="field-note" id="departure-summary">No departure criteria added yet.</p>
               </section>
 
-              <section class="control-card control-card-wide">
+              <section class="control-card control-card-wide selectable-snip" data-snip-label="Trip details control">
                 <div class="row-head">
                   <p class="mini-kicker">Trip details</p>
                   <span class="mini-copy">Consolidated into a single grouped grid.</span>
@@ -122,7 +123,7 @@
                 </div>
               </section>
 
-              <section class="control-card">
+              <section class="control-card selectable-snip" data-snip-label="Quick Escape control">
                 <p class="mini-kicker">Quick Escape</p>
                 <h3>I'm off [X] days in a row, where can I go?</h3>
                 <div class="feature-controls compact-feature-controls">
@@ -135,7 +136,7 @@
                 <p class="field-note" id="quick-escape-status">Ready to suggest compact, well-priced trip ideas.</p>
               </section>
 
-              <section class="control-card">
+              <section class="control-card selectable-snip" data-snip-label="Specific goal control">
                 <p class="mini-kicker">Specific Goal</p>
                 <h3>Pick a destination and let the app find the best slots.</h3>
                 <div class="details-grid goal-grid tight-details">
@@ -161,43 +162,74 @@
         <section class="discovery compact-discovery" id="discovery">
           <div class="section-header compact-section-header">
             <div>
-              <p class="section-label">Discovery board</p>
-              <h2>Curated options with strong visual tone.</h2>
+              <p class="section-label">Featured destinations</p>
+              <h2>High-quality destination cards with a lighter touch.</h2>
             </div>
           </div>
 
           <div class="board-grid">
-            <article class="destination-card card">
-              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80');"></div>
+            <article class="destination-card card selectable-snip" data-snip-label="Bali card">
+              <div class="destination-image" style="background-image: linear-gradient(to top, rgba(8, 22, 39, 0.35), rgba(8, 22, 39, 0.05)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80');"></div>
               <div class="destination-copy">
-                <p class="destination-name">Kyoto</p>
-                <p class="destination-detail">Temples, calm streets, and tea-house pauses.</p>
+                <p class="destination-name">Bali</p>
+                <p class="destination-detail">Temples, surf light, and polished tropical calm.</p>
+                <div class="tag-row"><span>temples</span><span>blue water</span><span>luxury</span></div>
               </div>
             </article>
-            <article class="destination-card card">
-              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80');"></div>
+            <article class="destination-card card selectable-snip" data-snip-label="Paris card">
+              <div class="destination-image" style="background-image: linear-gradient(to top, rgba(8, 22, 39, 0.35), rgba(8, 22, 39, 0.05)), url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80');"></div>
               <div class="destination-copy">
-                <p class="destination-name">Amalfi Coast</p>
-                <p class="destination-detail">Coastal views, long lunches, and open water.</p>
+                <p class="destination-name">Paris</p>
+                <p class="destination-detail">Iconic streets, galleries, and composed city energy.</p>
+                <div class="tag-row"><span>city</span><span>culture</span><span>elegant</span></div>
               </div>
             </article>
-            <article class="destination-card card">
-              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80');"></div>
+            <article class="destination-card card selectable-snip" data-snip-label="Kauai card">
+              <div class="destination-image" style="background-image: linear-gradient(to top, rgba(8, 22, 39, 0.35), rgba(8, 22, 39, 0.05)), url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80');"></div>
               <div class="destination-copy">
-                <p class="destination-name">Maui</p>
-                <p class="destination-detail">Wide horizons, slow mornings, and water everywhere.</p>
+                <p class="destination-name">Kauai</p>
+                <p class="destination-detail">Green cliffs, quiet beaches, and a softer pace.</p>
+                <div class="tag-row"><span>nature</span><span>quiet</span><span>resort</span></div>
               </div>
             </article>
-            <article class="destination-card card">
-              <div class="destination-image" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');"></div>
+            <article class="destination-card card selectable-snip" data-snip-label="Amalfi card">
+              <div class="destination-image" style="background-image: linear-gradient(to top, rgba(8, 22, 39, 0.35), rgba(8, 22, 39, 0.05)), url('https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80');"></div>
               <div class="destination-copy">
-                <p class="destination-name">Patagonia</p>
-                <p class="destination-detail">Big landscapes, sharp air, and room to move.</p>
+                <p class="destination-name">Amalfi</p>
+                <p class="destination-detail">Cliffside views with a calm, premium finish.</p>
+                <div class="tag-row"><span>coast</span><span>sunset</span><span>design</span></div>
               </div>
             </article>
           </div>
         </section>
       </main>
+    </div>
+
+    <div class="bug-modal hidden" id="bug-modal" aria-hidden="true">
+      <div class="bug-panel glass-card">
+        <div class="bug-panel-header">
+          <div>
+            <p class="mini-kicker">Bug report</p>
+            <h2>Snip the area, add a note, and submit.</h2>
+          </div>
+          <button class="ghost-button" type="button" id="bug-close-button">Close</button>
+        </div>
+
+        <p class="bug-help">Click a visible card or control on the page to mark it as the snip target.</p>
+
+        <div class="bug-snip-target" id="bug-snip-target">No snip selected yet.</div>
+
+        <label class="field bug-comment-field">
+          <span>Comment</span>
+          <textarea id="bug-comment" rows="4" placeholder="Describe the change you want."></textarea>
+        </label>
+
+        <div class="bug-actions">
+          <button class="mini-button" type="button" id="bug-submit-button">Submit bug</button>
+        </div>
+
+        <p class="bug-status" id="bug-status">Reports are stored locally in the app for Atlas retrieval.</p>
+      </div>
     </div>
 
     <script src="script.js"></script>
