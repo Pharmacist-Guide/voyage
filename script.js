@@ -71,8 +71,8 @@ const needDate = new Date(today);
 needDate.setDate(needDate.getDate() + 14);
 const canDate = new Date(today);
 canDate.setDate(canDate.getDate() + 56);
-needToGo.value = toISODate(needDate);
-canGo.value = toISODate(canDate);
+if (needToGo) needToGo.value = toISODate(needDate);
+if (canGo) canGo.value = toISODate(canDate);
 departureInput.value = toISODate(new Date(today));
 selectedDepartureCriteria.push({ type: 'date', date: departureInput.value || toISODate(today) });
 
@@ -190,8 +190,8 @@ const buildGoalCheck = () => {
   const destination = goalDestination.value.trim() || 'Key West';
   const pto = goalPto.value.trim() || '3';
   const flexibilityLevel = Number(flexibility.value);
-  const need = new Date(needToGo.value);
-  const can = new Date(canGo.value);
+  const need = new Date(needToGo?.value || toISODate(needDate));
+  const can = new Date(canGo?.value || toISODate(canDate));
   const windowText = `${formatShortDate(need)} to ${formatShortDate(can)}`;
   const overlapState = flexibilityLevel > 55 ? 'few light overlaps' : 'tighter calendar fit';
   return `Goal search for ${destination}: ${pto} PTO days, ${windowText}, ${overlapState}. Live Meridian / Atlas calendar overlap checks need the connected calendar layer.`;
