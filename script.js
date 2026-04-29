@@ -3,6 +3,7 @@ const tripTypeButtons = Array.from(document.querySelectorAll('.trip-type'));
 const destinationSummary = document.getElementById('destination-summary');
 const tripTypeSummary = document.getElementById('trip-type-summary');
 const searchStatus = document.getElementById('search-status');
+const bugStatus = document.getElementById('bug-status');
 const quickEscapeStatus = document.getElementById('quick-escape-status');
 const goalResults = document.getElementById('goal-results');
 const flexibility = document.getElementById('flexibility');
@@ -25,6 +26,15 @@ const departureInput = document.getElementById('departure-date-input');
 const addDepartureButton = document.getElementById('add-departure-date');
 const departurePills = document.getElementById('departure-pills');
 const departureSummary = document.getElementById('departure-summary');
+const bugButton = document.getElementById('bug-button');
+const bugPanel = document.getElementById('bug-panel');
+const closeBugPanel = document.getElementById('close-bug-panel');
+const bugPreview = document.getElementById('bug-preview');
+const bugOverlay = document.getElementById('bug-selection-overlay');
+const bugPreviewHint = document.getElementById('bug-preview-hint');
+const bugComment = document.getElementById('bug-comment');
+const bugSubmit = document.getElementById('bug-submit');
+const bugPanelStatus = document.getElementById('bug-panel-status');
 
 const toISODate = (date) => date.toISOString().slice(0, 10);
 const formatShortDate = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -34,6 +44,9 @@ const formatSelectedDate = (value) => {
 };
 
 const selectedDepartureDates = new Set();
+const bugReports = [];
+let bugSelection = null;
+let dragState = null;
 
 const today = new Date();
 const needDate = new Date(today);
@@ -42,9 +55,10 @@ const canDate = new Date(today);
 canDate.setDate(canDate.getDate() + 56);
 needToGo.value = toISODate(needDate);
 canGo.value = toISODate(canDate);
-
 departureInput.value = toISODate(new Date(today));
 selectedDepartureDates.add(departureInput.value);
+
+window.__voyageBugReports = bugReports;
 
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
@@ -78,6 +92,7 @@ const renderDeparturePills = () => {
       selectedDepartureDates.delete(date);
       renderDeparturePills();
       syncDepartureSummary();
+      searchStatus.textContent = buildSearchSummary();
     });
     departurePills.appendChild(pill);
   });
@@ -89,6 +104,7 @@ const addDepartureDate = () => {
   selectedDepartureDates.add(value);
   renderDeparturePills();
   syncDepartureSummary();
+  searchStatus.textContent = buildSearchSummary();
 };
 
 const normalizeRange = () => {
@@ -140,11 +156,116 @@ const buildGoalCheck = () => {
   return `Goal search for ${destination}: ${pto} PTO days, ${windowText}, ${overlapState}. Live Meridian / Atlas calendar overlap checks need the connected calendar layer.`;
 };
 
+const getBugSnippet = () => {
+  const rect = bugSelection;
+  if (!rect) return '';
+  return `Selection @ x:${Math.round(rect.x)} y:${Math.round(rect.y)} w:${Math.round(rect.width)} h:${Math.round(rect.height)}`;
+};
+
+const setBugStatus = (message) => {
+  bugPanelStatus.textContent = message;
+  bugStatus.textContent = message;
+};
+
+const openBugPanel = () => {
+  bugPanel.classList.add('is-open');
+  bugPanel.setAttribute('aria-hidden', 'false');
+  setBugStatus('Drag across the preview to capture a snippet.');
+  bugOverlay.classList.remove('is-visible');
+  bugOverlay.style.left = '0px';
+  bugOverlay.style.top = '0px';
+  bugOverlay.style.width = '0px';
+  bugOverlay.style.height = '0px';
+};
+
+const closeBugPanelHandler = () => {
+  bugPanel.classList.remove('is-open');
+  bugPanel.setAttribute('aria-hidden', 'true');
+};
+
+const saveBugReport = () => {
+  const report = {
+    createdAt: new Date().toISOString(),
+    snippet: getBugSnippet(),
+    comment: bugComment.value.trim(),
+    url: window.location.href,
+  };
+  bugReports.push(report);
+  localStorage.setItem('voyageBugReports', JSON.stringify(bugReports));
+  window.__voyageBugReports = bugReports;
+  console.log('Voyage bug/edit report captured', report);
+  setBugStatus('Report captured locally for Atlas retrieval.');
+};
+
+bugButton.addEventListener('click', openBugPanel);
+closeBugPanel.addEventListener('click', closeBugPanelHandler);
+bugSubmit.addEventListener('click', saveBugReport);
+
+bugPreview.addEventListener('pointerdown', (event) => {
+  const rect = bugPreview.getBoundingClientRect();
+  dragState = {
+    startX: event.clientX - rect.left,
+    startY: event.clientY - rect.top,
+    width: rect.width,
+    height: rect.height,
+  };
+  bugSelection = {
+    x: dragState.startX,
+    y: dragState.startY,
+    width: 1,
+    height: 1,
+  };
+  bugOverlay.classList.add('is-visible');
+  bugPreviewHint.textContent = 'Release to capture snippet';
+  bugPreview.setPointerCapture(event.pointerId);
+});
+
+bugPreview.addEventListener('pointermove', (event) => {
+  if (!dragState) return;
+  const rect = bugPreview.getBoundingClientRect();
+  const currentX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+  const currentY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+  const x = Math.min(dragState.startX, currentX);
+  const y = Math.min(dragState.startY, currentY);
+  const width = Math.abs(currentX - dragState.startX);
+  const height = Math.abs(currentY - dragState.startY);
+  bugSelection = { x, y, width, height };
+  bugOverlay.style.left = `${x}px`;
+  bugOverlay.style.top = `${y}px`;
+  bugOverlay.style.width = `${Math.max(width, 1)}px`;
+  bugOverlay.style.height = `${Math.max(height, 1)}px`;
+});
+
+const finishBugSelection = () => {
+  if (!dragState) return;
+  dragState = null;
+  bugPreviewHint.textContent = bugSelection ? `Snippet captured: ${getBugSnippet()}` : 'Drag to select a page section';
+  if (bugSelection) setBugStatus(`Snippet ready. ${getBugSnippet()}`);
+};
+
+bugPreview.addEventListener('pointerup', finishBugSelection);
+bugPreview.addEventListener('pointercancel', finishBugSelection);
+
+const keepBugPanelClean = () => {
+  const stored = localStorage.getItem('voyageBugReports');
+  if (!stored) return;
+  try {
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed)) {
+      bugReports.splice(0, bugReports.length, ...parsed);
+      window.__voyageBugReports = bugReports;
+    }
+  } catch {
+    localStorage.removeItem('voyageBugReports');
+  }
+};
+
 destinationButtons.forEach((button) => {
   button.addEventListener('click', () => {
     destinationButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncDestination();
+    searchStatus.textContent = buildSearchSummary();
   });
 });
 tripTypeButtons.forEach((button) => {
@@ -152,12 +273,13 @@ tripTypeButtons.forEach((button) => {
     tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncTripType();
+    searchStatus.textContent = buildSearchSummary();
   });
 });
 
 searchButton.addEventListener('click', () => {
-  searchButton.classList.add('is-active');
   searchStatus.textContent = buildSearchSummary();
+  searchButton.classList.add('is-active');
 });
 quickEscapeButton.addEventListener('click', () => {
   quickEscapeStatus.textContent = buildQuickEscape();
@@ -186,6 +308,7 @@ flexibility.addEventListener('input', () => {
 });
 
 function boot() {
+  keepBugPanelClean();
   syncDestination();
   syncTripType();
   updateFlexibilityLabel();

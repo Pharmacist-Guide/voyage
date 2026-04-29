@@ -39,13 +39,19 @@
                 <p class="section-label">Search center</p>
                 <h2>Everything the trip needs, in one compact grid.</h2>
               </div>
-              <button class="search-button" type="button" id="search-button">
-                <span class="search-button-kicker">Deep travel search</span>
-                <span class="search-button-label">Search Voyage</span>
-              </button>
+              <div class="header-actions">
+                <button class="ghost-button" type="button" id="bug-button">Bug</button>
+                <button class="search-button" type="button" id="search-button">
+                  <span class="search-button-kicker">Deep travel search</span>
+                  <span class="search-button-label">Search Voyage</span>
+                </button>
+              </div>
             </div>
 
-            <div class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</div>
+            <div class="status-row">
+              <div class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</div>
+              <div class="bug-status" id="bug-status">Bug reports stay local until you submit one.</div>
+            </div>
 
             <div class="control-grid">
               <section class="control-card">
@@ -203,6 +209,36 @@
                 <p class="destination-detail">Big landscapes, sharp air, and room to move.</p>
               </div>
             </article>
+          </div>
+        </section>
+
+        <section class="bug-panel card" id="bug-panel" aria-hidden="true">
+          <div class="bug-panel-head">
+            <div>
+              <p class="section-label">Bug / edit report</p>
+              <h2>Snip a section and describe the change.</h2>
+            </div>
+            <button class="ghost-button" type="button" id="close-bug-panel">Close</button>
+          </div>
+          <p class="mini-copy bug-panel-copy">
+            Drag over the page preview to select a region. The report stores the selected snippet, comment, and coordinates locally for Atlas retrieval.
+          </p>
+          <div class="bug-capture-shell">
+            <div class="bug-preview" id="bug-preview">
+              <div class="bug-preview-overlay" id="bug-selection-overlay"></div>
+              <div class="bug-preview-hint" id="bug-preview-hint">Drag to select a page section</div>
+            </div>
+            <div class="bug-form">
+              <label class="field bug-comment-field">
+                <span>Comment</span>
+                <textarea id="bug-comment" rows="5" placeholder="Describe the desired change..."></textarea>
+              </label>
+              <button class="search-button bug-submit" type="button" id="bug-submit">
+                <span class="search-button-kicker">Capture report</span>
+                <span class="search-button-label">Submit snippet</span>
+              </button>
+              <p class="bug-status" id="bug-panel-status">No snippet selected yet.</p>
+            </div>
           </div>
         </section>
       </main>
