@@ -2,11 +2,13 @@
 
 Voyage is a separate travel-planning site for Zachary.
 
-## What’s in the skeleton
+## What’s in this build
 
-- Date inputs for trip planning
-- Preference chips for trip style
-- Discovery board with destination cards and travel imagery
+- Hero-centered search experience
+- Anywhere destination option for open-ended, well-priced trips
+- Trip length range input
+- Multiple possible departure-date selections
+- Minimalist travel imagery and discovery board
 
 ## Local preview
 

@@ -6,7 +6,7 @@
     <title>Voyage</title>
     <meta
       name="description"
-      content="Voyage is a minimalist travel planning app with date inputs, preferences, and a discovery board for inspired trip planning."
+      content="Voyage is a minimalist travel planning app with a hero search experience, flexible dates, and discovery for inspired trip planning."
     />
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link rel="stylesheet" href="styles.css" />
@@ -16,109 +16,91 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Pharmacist-Guide / voyage</p>
-          <h1>Simple trip planning, designed to inspire the next departure.</h1>
+          <h1>Clean, inspiring trip planning for where to go next.</h1>
         </div>
         <p class="topbar-copy">
-          A separate travel workspace with a minimalist interface, elevated photography,
-          and calm structure for planning time away.
+          A separate travel workspace with a minimalist layout, high-end imagery, and a search-first
+          flow for well-priced escapes.
         </p>
       </header>
 
       <main>
-        <section class="hero">
-          <article class="hero-copy card">
-            <p class="section-label">Travel planning</p>
-            <h2>Find the shape of a trip before the details get noisy.</h2>
-            <p>
-              Start with dates, tune the feel of the trip, and browse a small board of places
-              that spark momentum.
+        <section class="hero card">
+          <div class="hero-media">
+            <div class="hero-media-image"></div>
+            <div class="hero-media-caption">
+              <p>Featured atmosphere</p>
+              <h2>Quiet mornings, open horizons, and a place that feels worth the trip.</h2>
+            </div>
+          </div>
+
+          <div class="hero-content">
+            <p class="section-label">Search experience</p>
+            <h2>Start with the question, then narrow the trip.</h2>
+            <p class="hero-intro">
+              Search is the center of the home page, with enough flexibility to explore destination,
+              timing, and price without losing the calm feel.
             </p>
 
-            <div class="hero-actions">
-              <a href="#planner" class="primary-link">Plan a trip</a>
-              <a href="#discovery" class="secondary-link">Browse destinations</a>
-            </div>
-
-            <div class="stat-row">
-              <div>
-                <span class="stat-value">6</span>
-                <span class="stat-label">days away</span>
+            <form class="search-panel" action="#" onsubmit="return false">
+              <div class="search-field search-field-destination">
+                <span>Destination</span>
+                <div class="destination-options" role="group" aria-label="Destination options">
+                  <button class="destination-pill is-active" type="button" data-destination="Anywhere">Anywhere</button>
+                  <button class="destination-pill" type="button" data-destination="Coast">Coast</button>
+                  <button class="destination-pill" type="button" data-destination="City">City</button>
+                  <button class="destination-pill" type="button" data-destination="Mountains">Mountains</button>
+                  <button class="destination-pill" type="button" data-destination="Island">Island</button>
+                </div>
+                <p class="field-note" id="destination-summary">Searching: Anywhere for random, well-priced trips.</p>
               </div>
-              <div>
-                <span class="stat-value">3</span>
-                <span class="stat-label">styles selected</span>
+
+              <div class="search-grid">
+                <label class="search-field">
+                  <span>Trip length range</span>
+                  <input id="length-min" type="text" inputmode="numeric" placeholder="7" value="7" />
+                  <small>Minimum days</small>
+                </label>
+                <label class="search-field">
+                  <span>&nbsp;</span>
+                  <input id="length-max" type="text" inputmode="numeric" placeholder="14" value="14" />
+                  <small>Maximum days</small>
+                </label>
+                <label class="search-field search-field-large">
+                  <span>Search prompt</span>
+                  <input id="search-query" type="search" placeholder="Where should the next trip go?" value="Well-priced, inspiring trips" />
+                  <small>Minimalist search centered in the hero</small>
+                </label>
               </div>
-              <div>
-                <span class="stat-value">12</span>
-                <span class="stat-label">saved ideas</span>
+
+              <div class="departure-card">
+                <div class="departure-header">
+                  <div>
+                    <p class="mini-kicker">Possible departure dates</p>
+                    <h3>Select one or more options.</h3>
+                  </div>
+                  <p class="mini-copy">Flexible departures help surface better fares.</p>
+                </div>
+
+                <div class="date-pills" id="departure-pills" aria-label="Possible departure dates">
+                  <button class="date-pill is-active" type="button">Fri, May 8</button>
+                  <button class="date-pill" type="button">Sat, May 9</button>
+                  <button class="date-pill" type="button">Wed, May 13</button>
+                  <button class="date-pill" type="button">Fri, May 15</button>
+                  <button class="date-pill" type="button">Sun, May 17</button>
+                </div>
+
+                <p class="field-note" id="departure-summary">Selected departure dates: Fri, May 8.</p>
               </div>
-            </div>
-          </article>
-
-          <aside class="hero-visual card">
-            <div class="visual-image"></div>
-            <div class="visual-overlay">
-              <p>Featured inspiration</p>
-              <h3>Sunlit coastlines, slow mornings, and enough room to wander.</h3>
-            </div>
-          </aside>
-        </section>
-
-        <section class="planner" id="planner">
-          <article class="card planner-panel">
-            <div class="section-header">
-              <div>
-                <p class="section-label">Date inputs</p>
-                <h2>Choose the window for the trip.</h2>
-              </div>
-              <p class="mini-copy">A clean starting point for departure, return, and trip length.</p>
-            </div>
-
-            <div class="input-grid">
-              <label>
-                <span>Depart</span>
-                <input id="depart-date" type="date" />
-              </label>
-              <label>
-                <span>Return</span>
-                <input id="return-date" type="date" />
-              </label>
-              <label>
-                <span>Trip length</span>
-                <input type="text" placeholder="5 nights" value="5 nights" />
-              </label>
-            </div>
-          </article>
-
-          <article class="card planner-panel">
-            <div class="section-header">
-              <div>
-                <p class="section-label">Preferences</p>
-                <h2>Shape the trip feel.</h2>
-              </div>
-              <p class="mini-copy">Pick a few qualities to guide the discovery board.</p>
-            </div>
-
-            <div class="chip-list" id="preference-chips">
-              <button class="chip is-active" type="button">Relaxed pace</button>
-              <button class="chip" type="button">Coastal views</button>
-              <button class="chip" type="button">Great food</button>
-              <button class="chip" type="button">Quiet stays</button>
-              <button class="chip" type="button">Walkable city</button>
-              <button class="chip" type="button">Outdoors first</button>
-            </div>
-
-            <div class="preference-footer">
-              <p class="mini-copy" id="preference-summary">Selected: Relaxed pace, Coastal views, Great food.</p>
-            </div>
-          </article>
+            </form>
+          </div>
         </section>
 
         <section class="discovery" id="discovery">
-          <div class="section-header board-header">
+          <div class="section-header">
             <div>
               <p class="section-label">Discovery board</p>
-              <h2>Places worth opening next.</h2>
+              <h2>Curated options with strong visual tone.</h2>
             </div>
             <p class="mini-copy">
               A light board of destinations with imagery, mood, and a few quick tags.

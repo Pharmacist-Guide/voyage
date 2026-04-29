@@ -1,30 +1,63 @@
-const departInput = document.getElementById('depart-date');
-const returnInput = document.getElementById('return-date');
-const chips = Array.from(document.querySelectorAll('#preference-chips .chip'));
-const summary = document.getElementById('preference-summary');
+const destinationButtons = Array.from(document.querySelectorAll('.destination-pill'));
+const dateButtons = Array.from(document.querySelectorAll('.date-pill'));
+const destinationSummary = document.getElementById('destination-summary');
+const departureSummary = document.getElementById('departure-summary');
+const lengthMin = document.getElementById('length-min');
+const lengthMax = document.getElementById('length-max');
+const searchQuery = document.getElementById('search-query');
 
-const toISODate = (date) => date.toISOString().slice(0, 10);
-
-const today = new Date();
-const returnDate = new Date(today);
-returnDate.setDate(returnDate.getDate() + 7);
-
-departInput.value = toISODate(today);
-returnInput.value = toISODate(returnDate);
-
-const updateSummary = () => {
-  const active = chips.filter((chip) => chip.classList.contains('is-active')).map((chip) => chip.textContent.trim());
-  summary.textContent = `Selected: ${active.join(', ')}.`;
+const syncDestination = () => {
+  const active = destinationButtons.find((button) => button.classList.contains('is-active'));
+  const label = active?.dataset.destination ?? 'Anywhere';
+  destinationSummary.textContent =
+    label === 'Anywhere'
+      ? 'Searching: Anywhere for random, well-priced trips.'
+      : `Searching: ${label} trips with a flexible, curated feel.`;
 };
 
-chips.forEach((chip) => {
-  chip.addEventListener('click', () => {
-    chip.classList.toggle('is-active');
-    if (chips.filter((item) => item.classList.contains('is-active')).length === 0) {
-      chip.classList.add('is-active');
-    }
-    updateSummary();
+const syncDates = () => {
+  const selected = dateButtons.filter((button) => button.classList.contains('is-active')).map((button) => button.textContent.trim());
+  departureSummary.textContent =
+    selected.length > 0
+      ? `Selected departure dates: ${selected.join(', ')}.`
+      : 'Selected departure dates: none.';
+};
+
+const normalizeRange = () => {
+  const min = Number.parseInt(lengthMin.value, 10);
+  const max = Number.parseInt(lengthMax.value, 10);
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return;
+  if (min > max) {
+    lengthMax.value = String(min);
+  }
+};
+
+destinationButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    destinationButtons.forEach((item) => item.classList.remove('is-active'));
+    button.classList.add('is-active');
+    syncDestination();
   });
 });
 
-updateSummary();
+dateButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    button.classList.toggle('is-active');
+    if (dateButtons.every((item) => !item.classList.contains('is-active'))) {
+      button.classList.add('is-active');
+    }
+    syncDates();
+  });
+});
+
+[lengthMin, lengthMax].forEach((input) => {
+  input.addEventListener('change', normalizeRange);
+  input.addEventListener('blur', normalizeRange);
+});
+
+searchQuery.addEventListener('input', () => {
+  searchQuery.dataset.value = searchQuery.value;
+});
+
+syncDestination();
+syncDates();
