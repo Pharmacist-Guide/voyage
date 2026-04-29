@@ -43,7 +43,7 @@
             </p>
 
             <form class="search-panel" action="#" onsubmit="return false">
-              <div class="search-field search-field-destination">
+              <div class="search-field search-field-destination compact">
                 <span>Destination</span>
                 <div class="destination-options" role="group" aria-label="Destination options">
                   <button class="destination-pill is-active" type="button" data-destination="Anywhere">Anywhere</button>
@@ -55,25 +55,7 @@
                 <p class="field-note" id="destination-summary">Searching: Anywhere for random, well-priced trips.</p>
               </div>
 
-              <div class="search-grid search-grid-tight">
-                <label class="search-field">
-                  <span>Trip length range</span>
-                  <input id="length-min" type="text" inputmode="numeric" placeholder="7" value="7" />
-                  <small>Minimum days</small>
-                </label>
-                <label class="search-field">
-                  <span>&nbsp;</span>
-                  <input id="length-max" type="text" inputmode="numeric" placeholder="14" value="14" />
-                  <small>Maximum days</small>
-                </label>
-                <label class="search-field search-field-large">
-                  <span>Search prompt</span>
-                  <input id="search-query" type="search" placeholder="Where should the next trip go?" value="Well-priced, inspiring trips" />
-                  <small>Minimalist search centered in the hero</small>
-                </label>
-              </div>
-
-              <div class="search-field">
+              <div class="search-field compact">
                 <span>Trip type</span>
                 <div class="trip-type-grid" id="trip-type-group" role="group" aria-label="Trip type selectors">
                   <button class="trip-type is-active" type="button" data-trip-type="Flight + Hotel">Flight + Hotel</button>
@@ -84,58 +66,46 @@
                 <p class="field-note" id="trip-type-summary">Trip type: Flight + Hotel.</p>
               </div>
 
-              <div class="date-window card-inner">
-                <div class="departure-header">
-                  <div>
-                    <p class="mini-kicker">Need to go / can go</p>
-                    <h3>Define the date window manually.</h3>
+              <div class="search-grid search-grid-tight">
+                <label class="search-field compact">
+                  <span>Need to go</span>
+                  <input id="need-to-go" type="date" />
+                  <small>Harder starting point</small>
+                </label>
+                <label class="search-field compact">
+                  <span>Can go</span>
+                  <input id="can-go" type="date" />
+                  <small>Latest acceptable departure</small>
+                </label>
+                <label class="search-field search-field-large compact">
+                  <span>Trip length range</span>
+                  <input id="length-min" type="text" inputmode="numeric" placeholder="7" value="7" />
+                  <small>7-14 day windows feel natural here</small>
+                </label>
+                <label class="search-field search-field-large compact">
+                  <span>&nbsp;</span>
+                  <input id="length-max" type="text" inputmode="numeric" placeholder="14" value="14" />
+                  <small>Maximum days</small>
+                </label>
+                <label class="search-field search-field-wide compact">
+                  <span>Flexibility</span>
+                  <div class="flex-wrap">
+                    <input id="flexibility" type="range" min="0" max="100" value="65" />
+                    <span class="flex-value" id="flexibility-value">Flexible</span>
                   </div>
-                  <p class="mini-copy">A flexibility control helps broaden or tighten the search.</p>
-                </div>
-
-                <div class="details-grid date-grid">
-                  <label class="search-field">
-                    <span>Need to go</span>
-                    <input id="need-to-go" type="date" />
-                    <small>Harder starting point</small>
-                  </label>
-                  <label class="search-field">
-                    <span>Can go</span>
-                    <input id="can-go" type="date" />
-                    <small>Latest acceptable departure</small>
-                  </label>
-                  <label class="search-field search-field-wide">
-                    <span>Flexibility</span>
-                    <div class="flex-wrap">
-                      <input id="flexibility" type="range" min="0" max="100" value="65" />
-                      <span class="flex-value" id="flexibility-value">Flexible</span>
-                    </div>
-                    <small>Slider for tighter or looser date matching</small>
-                  </label>
-                </div>
+                  <small>Slider for tighter or looser date matching</small>
+                </label>
               </div>
 
-              <div class="departure-card">
-                <div class="departure-header">
-                  <div>
-                    <p class="mini-kicker">Possible departure dates</p>
-                    <h3>Select one or more options.</h3>
-                  </div>
-                  <p class="mini-copy">Flexible departures help surface better fares.</p>
-                </div>
-
-                <div class="date-pills" id="departure-pills" aria-label="Possible departure dates">
-                  <button class="date-pill is-active" type="button">Fri, May 8</button>
-                  <button class="date-pill" type="button">Sat, May 9</button>
-                  <button class="date-pill" type="button">Wed, May 13</button>
-                  <button class="date-pill" type="button">Fri, May 15</button>
-                  <button class="date-pill" type="button">Sun, May 17</button>
-                </div>
-
-                <p class="field-note" id="departure-summary">Selected departure dates: Fri, May 8.</p>
+              <div class="search-actions compact-actions">
+                <button class="search-button" type="button" id="search-button">
+                  <span class="search-button-kicker">Deep travel search</span>
+                  <span class="search-button-label">Search Voyage</span>
+                </button>
+                <p class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</p>
               </div>
 
-              <div class="details-card">
+              <div class="details-card compact">
                 <div class="details-header">
                   <div>
                     <p class="mini-kicker">Trip detail customizations</p>
@@ -145,22 +115,22 @@
                 </div>
 
                 <div class="details-grid">
-                  <label class="search-field">
+                  <label class="search-field compact">
                     <span>Max Budget</span>
                     <input id="max-budget" type="text" inputmode="numeric" placeholder="$2,500" value="$2,500" />
                     <small>Total trip budget target</small>
                   </label>
-                  <label class="search-field">
+                  <label class="search-field compact">
                     <span>Number of Travelers</span>
                     <input id="traveler-count" type="text" inputmode="numeric" placeholder="2" value="2" />
                     <small>Adults, companions, or group size</small>
                   </label>
-                  <label class="search-field search-field-wide">
+                  <label class="search-field search-field-wide compact">
                     <span>Preferred Ports / Destinations</span>
                     <input id="preferred-ports" type="text" placeholder="Miami, Barcelona, San Juan" value="Miami, Barcelona, San Juan" />
                     <small>Ports, airports, or destination ideas</small>
                   </label>
-                  <label class="search-field search-field-wide">
+                  <label class="search-field search-field-wide compact">
                     <span>Cruise Line Preferences</span>
                     <input id="cruise-lines" type="text" placeholder="Celebrity, Princess, Holland America" value="Celebrity, Princess, Holland America" />
                     <small>Lines that fit the travel style</small>
@@ -168,8 +138,8 @@
                 </div>
               </div>
 
-              <section class="feature-grid">
-                <article class="feature-card">
+              <div class="feature-grid">
+                <article class="feature-card compact">
                   <div class="feature-copy">
                     <p class="mini-kicker">Quick Escape</p>
                     <h3>I'm off [X] days in a row, where can I go?</h3>
@@ -179,7 +149,7 @@
                     </p>
                   </div>
                   <div class="feature-controls">
-                    <label class="search-field">
+                    <label class="search-field compact">
                       <span>Off for</span>
                       <input id="off-days" type="text" inputmode="numeric" value="4" />
                       <small>Days in a row</small>
@@ -189,7 +159,7 @@
                   <p class="field-note" id="quick-escape-status">Ready to suggest compact, well-priced trip ideas.</p>
                 </article>
 
-                <article class="feature-card">
+                <article class="feature-card compact">
                   <div class="feature-copy">
                     <p class="mini-kicker">Specific Goal</p>
                     <h3>Choose a destination and let the app find the best slots.</h3>
@@ -198,17 +168,17 @@
                     </p>
                   </div>
                   <div class="details-grid goal-grid">
-                    <label class="search-field search-field-wide">
+                    <label class="search-field search-field-wide compact">
                       <span>Destination goal</span>
                       <input id="goal-destination" type="text" placeholder="Key West" value="Key West" />
                       <small>Specific destination target</small>
                     </label>
-                    <label class="search-field">
+                    <label class="search-field compact">
                       <span>Allowed PTO days</span>
                       <input id="goal-pto" type="text" inputmode="numeric" placeholder="3" value="3" />
                       <small>Days available for time off</small>
                     </label>
-                    <label class="search-field">
+                    <label class="search-field compact">
                       <span>Calendar source</span>
                       <input type="text" value="Meridian / Atlas calendar check" readonly />
                       <small>Live overlap checks require the connected calendar layer</small>
@@ -218,14 +188,6 @@
                     Suggested slots will appear here after overlap checks.
                   </div>
                 </article>
-              </section>
-
-              <div class="search-actions">
-                <button class="search-button" type="button" id="search-button">
-                  <span class="search-button-kicker">Deep travel search</span>
-                  <span class="search-button-label">Search Voyage</span>
-                </button>
-                <p class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</p>
               </div>
             </form>
           </div>

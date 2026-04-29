@@ -25,8 +25,7 @@ const needToGo = document.getElementById('need-to-go');
 const canGo = document.getElementById('can-go');
 
 const toISODate = (date) => date.toISOString().slice(0, 10);
-const formatShortDate = (date) =>
-  date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const formatShortDate = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 const today = new Date();
 const needDate = new Date(today);
@@ -52,19 +51,14 @@ const syncTripType = () => {
 
 const syncDates = () => {
   const selected = dateButtons.filter((button) => button.classList.contains('is-active')).map((button) => button.textContent.trim());
-  departureSummary.textContent =
-    selected.length > 0
-      ? `Selected departure dates: ${selected.join(', ')}.`
-      : 'Selected departure dates: none.';
+  departureSummary.textContent = selected.length > 0 ? `Selected departure dates: ${selected.join(', ')}.` : 'Selected departure dates: none.';
 };
 
 const normalizeRange = () => {
   const min = Number.parseInt(lengthMin.value, 10);
   const max = Number.parseInt(lengthMax.value, 10);
   if (!Number.isFinite(min) || !Number.isFinite(max)) return;
-  if (min > max) {
-    lengthMax.value = String(min);
-  }
+  if (min > max) lengthMax.value = String(min);
 };
 
 const updateFlexibilityLabel = () => {
@@ -85,7 +79,6 @@ const buildSearchSummary = () => {
   const travelers = travelerCount.value.trim() || '2';
   const ports = preferredPorts.value.trim() || 'Flexible ports';
   const lines = cruiseLines.value.trim() || 'Flexible cruise lines';
-
   return [
     `Searching ${destination.toLowerCase()} for ${query.toLowerCase()} (${tripType.toLowerCase()}).`,
     `Dates: ${dates.slice(0, 3).join(', ')}${dates.length > 3 ? '…' : ''}.`,
@@ -129,9 +122,7 @@ tripTypeButtons.forEach((button) => {
 dateButtons.forEach((button) => {
   button.addEventListener('click', () => {
     button.classList.toggle('is-active');
-    if (dateButtons.every((item) => !item.classList.contains('is-active'))) {
-      button.classList.add('is-active');
-    }
+    if (dateButtons.every((item) => !item.classList.contains('is-active'))) button.classList.add('is-active');
     syncDates();
   });
 });
@@ -141,20 +132,21 @@ dateButtons.forEach((button) => {
   input.addEventListener('blur', normalizeRange);
 });
 
-flexibility.addEventListener('input', updateFlexibilityLabel);
+flexibility.addEventListener('input', () => {
+  updateFlexibilityLabel();
+  goalResults.textContent = buildGoalCheck();
+});
 searchButton.addEventListener('click', () => {
   searchStatus.textContent = buildSearchSummary();
 });
 quickEscapeButton.addEventListener('click', () => {
   quickEscapeStatus.textContent = buildQuickEscape();
 });
-[goalDestination, goalPto, needToGo, canGo, flexibility].forEach((input) => {
+[goalDestination, goalPto, needToGo, canGo].forEach((input) => {
   input.addEventListener('input', () => {
     goalResults.textContent = buildGoalCheck();
   });
 });
-
-actionLoop();
 
 function actionLoop() {
   syncDestination();
@@ -165,3 +157,5 @@ function actionLoop() {
   quickEscapeStatus.textContent = buildQuickEscape();
   goalResults.textContent = buildGoalCheck();
 }
+
+actionLoop();
