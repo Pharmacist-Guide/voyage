@@ -7,6 +7,8 @@ const tripTypeSummary = document.getElementById('trip-type-summary');
 const searchStatus = document.getElementById('search-status');
 const quickEscapeStatus = document.getElementById('quick-escape-status');
 const goalResults = document.getElementById('goal-results');
+const tripResults = document.getElementById('trip-results');
+const tripResultsSummary = document.getElementById('trip-results-summary');
 const flexibility = document.getElementById('flexibility');
 const flexibilityValue = document.getElementById('flexibility-value');
 const lengthMin = document.getElementById('length-min');
@@ -47,6 +49,7 @@ const formatSelectedDate = (value) => {
 const selectedDepartureCriteria = [];
 let departureMode = 'date';
 let activeSnip = null;
+const atlasBookingCache = {};
 
 const today = new Date();
 const needDate = new Date(today);
@@ -93,6 +96,7 @@ const renderDeparturePills = () => {
       renderDeparturePills();
       syncDepartureSummary();
       searchStatus.textContent = buildSearchSummary();
+      renderTripResults();
     });
     departurePills.appendChild(pill);
   });
@@ -113,6 +117,7 @@ const addDepartureCriteria = () => {
   renderDeparturePills();
   syncDepartureSummary();
   searchStatus.textContent = buildSearchSummary();
+  renderTripResults();
 };
 
 const normalizeRange = () => {
@@ -129,7 +134,7 @@ const updateFlexibilityLabel = () => {
   else flexibilityValue.textContent = 'Very flexible';
 };
 
-const buildSearchSummary = () => {
+const getTripContext = () => {
   const destination = destinationButtons.find((button) => button.classList.contains('is-active'))?.dataset.destination ?? 'Anywhere';
   const tripType = tripTypeButtons.find((button) => button.classList.contains('is-active'))?.dataset.tripType ?? 'Flight + Hotel';
   const departureText = selectedDepartureCriteria.length
@@ -137,18 +142,27 @@ const buildSearchSummary = () => {
         .map((item) => (item.type === 'range' ? `${formatSelectedDate(item.start)} - ${formatSelectedDate(item.end)}` : formatSelectedDate(item.date)))
         .join(', ')
     : 'none selected';
-  const minDays = lengthMin.value.trim() || '7';
-  const maxDays = lengthMax.value.trim() || '14';
-  const query = searchQuery.value.trim() || 'Well-priced, inspiring trips';
-  const budget = maxBudget.value.trim() || '$2,500';
-  const travelers = travelerCount.value.trim() || '2';
-  const ports = preferredPorts.value.trim() || 'Flexible ports';
-  const lines = cruiseLines.value.trim() || 'Flexible cruise lines';
+  return {
+    destination,
+    tripType,
+    departureText,
+    minDays: lengthMin.value.trim() || '7',
+    maxDays: lengthMax.value.trim() || '14',
+    query: searchQuery.value.trim() || 'Well-priced, inspiring trips',
+    budget: maxBudget.value.trim() || '$2,500',
+    travelers: travelerCount.value.trim() || '2',
+    ports: preferredPorts.value.trim() || 'Flexible ports',
+    lines: cruiseLines.value.trim() || 'Flexible cruise lines',
+  };
+};
+
+const buildSearchSummary = () => {
+  const context = getTripContext();
   return [
-    `Searching ${destination.toLowerCase()} for ${query.toLowerCase()} (${tripType.toLowerCase()}).`,
-    `Departure criteria: ${departureText}.`,
-    `Length: ${minDays}-${maxDays} days · Budget: ${budget} · Travelers: ${travelers}.`,
-    `Ports: ${ports}. Lines: ${lines}.`,
+    `Searching ${context.destination.toLowerCase()} for ${context.query.toLowerCase()} (${context.tripType.toLowerCase()}).`,
+    `Departure criteria: ${context.departureText}.`,
+    `Length: ${context.minDays}-${context.maxDays} days · Budget: ${context.budget} · Travelers: ${context.travelers}.`,
+    `Ports: ${context.ports}. Lines: ${context.lines}.`,
   ].join(' ');
 };
 
@@ -168,6 +182,115 @@ const buildGoalCheck = () => {
   return `Goal search for ${destination}: ${pto} PTO days, ${windowText}, ${overlapState}. Live Meridian / Atlas calendar overlap checks need the connected calendar layer.`;
 };
 
+const buildBookingPricing = (context) => {
+  const seed = `${context.destination}-${context.tripType}-${context.departureText}-${context.budget}-${context.travelers}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  const direct = 640 + (hash % 520);
+  const expedia = direct - (hash % 2 === 0 ? 40 + (hash % 160) : -30);
+  const priceline = direct - (hash % 3 === 0 ? 25 + (hash % 140) : -10);
+  return {
+    direct,
+    expedia: Math.max(420, expedia),
+    priceline: Math.max(420, priceline),
+  };
+};
+
+const getBundleVendor = (context, prices) => {
+  const bundleCandidates = [
+    { vendor: 'Expedia', price: prices.expedia },
+    { vendor: 'Priceline', price: prices.priceline },
+  ].filter((item) => item.price < prices.direct);
+  if (!bundleCandidates.length) return null;
+  bundleCandidates.sort((a, b) => a.price - b.price);
+  return bundleCandidates[0];
+};
+
+const makeLink = (label, href, secondary = false) => {
+  const anchor = document.createElement('a');
+  anchor.className = secondary ? 'result-link secondary' : 'result-link';
+  anchor.href = href;
+  anchor.target = '_blank';
+  anchor.rel = 'noreferrer';
+  anchor.textContent = label;
+  return anchor;
+};
+
+const buildAtlasPlaceholder = (context, prices) => ({
+  directBooking: {
+    provider: 'Direct booking',
+    price: prices.direct,
+    url: `https://example.com/direct-booking?destination=${encodeURIComponent(context.destination)}&type=${encodeURIComponent(context.tripType)}`,
+  },
+  bundles: [
+    { provider: 'Expedia', price: prices.expedia, url: `https://www.expedia.com/Hotel-Search?destination=${encodeURIComponent(context.destination)}` },
+    { provider: 'Priceline', price: prices.priceline, url: `https://www.priceline.com/` },
+  ],
+});
+
+const renderTripResults = () => {
+  const context = getTripContext();
+  const prices = buildBookingPricing(context);
+  const atlas = buildAtlasPlaceholder(context, prices);
+  const cheaperBundle = getBundleVendor(context, prices);
+
+  atlasBookingCache.latest = { context, prices, atlas, cheaperBundle };
+  window.__atlasBookingOptions = atlasBookingCache.latest;
+
+  tripResults.innerHTML = '';
+
+  const directCard = document.createElement('article');
+  directCard.className = 'result-card primary';
+  directCard.innerHTML = `
+    <div class="result-title-row">
+      <h4>Direct booking</h4>
+      <span class="result-price">$${atlas.directBooking.price}</span>
+    </div>
+    <p class="result-note">Primary option for ${context.destination}. Best for clean pricing and fewer handoffs.</p>
+  `;
+  const directLinks = document.createElement('div');
+  directLinks.className = 'result-links';
+  directLinks.appendChild(makeLink('Book direct', atlas.directBooking.url));
+  directCard.appendChild(directLinks);
+  tripResults.appendChild(directCard);
+
+  const expediaCard = document.createElement('article');
+  expediaCard.className = 'result-card';
+  expediaCard.innerHTML = `
+    <div class="result-title-row">
+      <h4>Expedia bundle</h4>
+      <span class="result-price">$${atlas.bundles[0].price}</span>
+    </div>
+    <p class="result-note">${atlas.bundles[0].price < atlas.directBooking.price ? 'Cheaper than direct in this comparison.' : 'Bundle pricing placeholder for Atlas to evaluate.'}</p>
+  `;
+  const expediaLinks = document.createElement('div');
+  expediaLinks.className = 'result-links';
+  expediaLinks.appendChild(makeLink('Expedia bundle', atlas.bundles[0].url, true));
+  expediaCard.appendChild(expediaLinks);
+  if (atlas.bundles[0].price < atlas.directBooking.price) tripResults.appendChild(expediaCard);
+
+  const pricelineCard = document.createElement('article');
+  pricelineCard.className = 'result-card';
+  pricelineCard.innerHTML = `
+    <div class="result-title-row">
+      <h4>Priceline bundle</h4>
+      <span class="result-price">$${atlas.bundles[1].price}</span>
+    </div>
+    <p class="result-note">${atlas.bundles[1].price < atlas.directBooking.price ? 'Cheaper than direct in this comparison.' : 'Bundle pricing placeholder for Atlas to evaluate.'}</p>
+  `;
+  const pricelineLinks = document.createElement('div');
+  pricelineLinks.className = 'result-links';
+  pricelineLinks.appendChild(makeLink('Priceline bundle', atlas.bundles[1].url, true));
+  pricelineCard.appendChild(pricelineLinks);
+  if (atlas.bundles[1].price < atlas.directBooking.price) tripResults.appendChild(pricelineCard);
+
+  if (cheaperBundle) {
+    tripResultsSummary.textContent = `${cheaperBundle.vendor} bundle is currently cheaper than direct in this Atlas placeholder comparison.`;
+  } else {
+    tripResultsSummary.textContent = 'Direct booking is currently the best option in this Atlas placeholder comparison.';
+  }
+};
+
 const setDepartureMode = (mode) => {
   departureMode = mode;
   modeButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.mode === mode));
@@ -177,9 +300,7 @@ const setDepartureMode = (mode) => {
 const openBugModal = () => {
   bugModal.classList.remove('hidden');
   bugModal.setAttribute('aria-hidden', 'false');
-  bugStatus.textContent = activeSnip
-    ? 'Snip selected. Add your note and submit.'
-    : 'Click a card or control behind the modal to select a snip target.';
+  bugStatus.textContent = activeSnip ? 'Snip selected. Add your note and submit.' : 'Click a card or control behind the panel to select a snip target.';
 };
 
 const closeBugModal = () => {
@@ -214,12 +335,19 @@ const saveBugReport = (report) => {
   console.log('Voyage bug report', report);
 };
 
+const refreshOutputs = () => {
+  searchStatus.textContent = buildSearchSummary();
+  quickEscapeStatus.textContent = buildQuickEscape();
+  goalResults.textContent = buildGoalCheck();
+  renderTripResults();
+};
+
 destinationButtons.forEach((button) => {
   button.addEventListener('click', () => {
     destinationButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncDestination();
-    searchStatus.textContent = buildSearchSummary();
+    refreshOutputs();
   });
 });
 tripTypeButtons.forEach((button) => {
@@ -227,7 +355,7 @@ tripTypeButtons.forEach((button) => {
     tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncTripType();
-    searchStatus.textContent = buildSearchSummary();
+    refreshOutputs();
   });
 });
 modeButtons.forEach((button) => {
@@ -237,7 +365,7 @@ modeButtons.forEach((button) => {
 });
 
 searchButton.addEventListener('click', () => {
-  searchStatus.textContent = buildSearchSummary();
+  refreshOutputs();
 });
 quickEscapeButton.addEventListener('click', () => {
   quickEscapeStatus.textContent = buildQuickEscape();
@@ -262,12 +390,11 @@ departureEndInput.addEventListener('keydown', (event) => {
 flexibility.addEventListener('input', () => {
   updateFlexibilityLabel();
   goalResults.textContent = buildGoalCheck();
+  renderTripResults();
 });
 [searchQuery, maxBudget, travelerCount, preferredPorts, cruiseLines, offDays, goalDestination, goalPto, needToGo, canGo].forEach((input) => {
   input.addEventListener('input', () => {
-    searchStatus.textContent = buildSearchSummary();
-    quickEscapeStatus.textContent = buildQuickEscape();
-    goalResults.textContent = buildGoalCheck();
+    refreshOutputs();
   });
 });
 
@@ -310,10 +437,9 @@ function boot() {
   setDepartureMode('date');
   renderDeparturePills();
   syncDepartureSummary();
-  searchStatus.textContent = buildSearchSummary();
-  quickEscapeStatus.textContent = buildQuickEscape();
-  goalResults.textContent = buildGoalCheck();
+  refreshOutputs();
   window.__atlasBugReports = JSON.parse(localStorage.getItem('voyageBugReports') || '[]');
+  window.__atlasBookingOptions = atlasBookingCache.latest || null;
 }
 
 boot();

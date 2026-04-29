@@ -137,14 +137,16 @@ body::before {
 .destination-pill,
 .trip-type,
 .mode-pill,
-.date-pill {
+.date-pill,
+.result-link {
   border: 1px solid var(--line);
   font: inherit;
   border-radius: 999px;
   transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 .search-button,
-.mini-button {
+.mini-button,
+.result-link {
   cursor: pointer;
   padding: 12px 14px;
   color: white;
@@ -156,9 +158,11 @@ body::before {
   pointer-events: auto;
   touch-action: manipulation;
   text-align: left;
+  text-decoration: none;
 }
 .search-button:hover,
 .mini-button:hover,
+.result-link:hover,
 .ghost-button:hover,
 .destination-pill:hover,
 .trip-type:hover,
@@ -186,7 +190,9 @@ body::before {
 .goal-results,
 .bug-help,
 .bug-status,
-.mini-copy {
+.mini-copy,
+.result-note,
+.result-meta {
   margin: 0;
   color: var(--muted);
   line-height: 1.45;
@@ -220,7 +226,8 @@ body::before {
 .mode-toggle { display: inline-flex; padding: 4px; gap: 4px; background: rgba(255,255,255,0.55); border: 1px solid var(--line); border-radius: 999px; }
 .search-console .field,
 .bug-comment-field.field,
-.field-inline {
+.field-inline,
+.result-card {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(255,255,255,0.62);
@@ -307,6 +314,34 @@ body::before {
 .bug-panel-header { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
 .bug-panel h2 { font-size: clamp(1.4rem, 2.8vw, 2rem); }
 .bug-comment-field textarea { min-height: 110px; }
+.trip-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.result-card {
+  align-content: start;
+  gap: 8px;
+}
+.result-card.primary {
+  border-color: rgba(25, 183, 199, 0.22);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(240, 252, 255, 0.88));
+}
+.result-card h4,
+.result-title {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+}
+.result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.result-price { font-weight: 700; color: #0d8794; }
+.result-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.result-link { min-width: auto; padding: 9px 12px; }
+.result-link.secondary {
+  background: rgba(255,255,255,0.75);
+  color: var(--text);
+  box-shadow: none;
+}
 .compact-discovery { margin-top: 8px; }
 .compact-section-header { margin-bottom: 8px; }
 .board-grid {
@@ -329,7 +364,8 @@ body::before {
   .board-grid,
   .control-grid,
   .departure-form,
-  .details-grid { grid-template-columns: 1fr; }
+  .details-grid,
+  .trip-results { grid-template-columns: 1fr; }
   .control-card-wide,
   .field-wide { grid-column: span 1; }
   .control-header,
@@ -346,6 +382,7 @@ body::before {
   .hero-media-caption { left: 8px; right: 8px; bottom: 8px; padding: 12px; }
   .search-button,
   .mini-button,
-  .ghost-button { width: 100%; }
+  .ghost-button,
+  .result-link { width: 100%; }
   .bug-modal { padding: 8px; place-items: end; }
 }
