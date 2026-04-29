@@ -301,7 +301,7 @@ body::before {
   place-items: end;
   padding: 18px;
   z-index: 50;
-  pointer-events: none;
+  pointer-events: auto;
 }
 .bug-panel {
   width: min(760px, 100%);

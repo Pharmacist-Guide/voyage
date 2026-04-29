@@ -50,12 +50,21 @@ const selectedDepartureCriteria = [];
 let departureMode = 'date';
 let activeSnip = null;
 const atlasBookingCache = {};
+const externalSourceAudit = {};
 const on = (element, eventName, handler) => {
   if (element) element.addEventListener(eventName, handler);
 };
 const setText = (element, text) => {
   if (element) element.textContent = text;
 };
+const isVisible = (element) => Boolean(element && !element.classList.contains('hidden'));
+const probeImage = (url) => new Promise((resolve) => {
+  const img = new Image();
+  img.onload = () => resolve({ url, ok: true });
+  img.onerror = () => resolve({ url, ok: false });
+  img.referrerPolicy = 'no-referrer';
+  img.src = url;
+});
 
 const today = new Date();
 const needDate = new Date(today);
@@ -304,14 +313,24 @@ const setDepartureMode = (mode) => {
 };
 
 const openBugModal = () => {
+  if (!bugModal) return;
   bugModal.classList.remove('hidden');
   bugModal.setAttribute('aria-hidden', 'false');
   setText(bugStatus, activeSnip ? 'Snip selected. Add your note and submit.' : 'Click a card or control behind the panel to select a snip target.');
+  window.setTimeout(() => bugComment?.focus?.(), 0);
 };
 
 const closeBugModal = () => {
+  if (!bugModal) return;
   bugModal.classList.add('hidden');
   bugModal.setAttribute('aria-hidden', 'true');
+  clearSnipTargets();
+  activeSnip = null;
+};
+
+const toggleBugModal = () => {
+  if (!bugModal) return;
+  if (isVisible(bugModal)) closeBugModal(); else openBugModal();
 };
 
 const serializeSnip = (element) => ({
@@ -346,6 +365,7 @@ const refreshOutputs = () => {
   setText(quickEscapeStatus, buildQuickEscape());
   setText(goalResults, buildGoalCheck());
   renderTripResults();
+  runInteractiveAudit();
 };
 
 destinationButtons.forEach((button) => {
@@ -373,7 +393,7 @@ modeButtons.forEach((button) => {
 on(searchButton, 'click', () => {
   refreshOutputs();
 });
-quickEscapeButton.addEventListener('click', () => {
+on(quickEscapeButton, 'click', () => {
   setText(quickEscapeStatus, buildQuickEscape());
 });
 on(addDepartureButton, 'click', addDepartureCriteria);
@@ -404,10 +424,13 @@ on(flexibility, 'input', () => {
   });
 });
 
-on(bugButton, 'click', openBugModal);
+on(bugButton, 'click', toggleBugModal);
 on(bugCloseButton, 'click', closeBugModal);
 on(bugModal, 'click', (event) => {
   if (event.target === bugModal) closeBugModal();
+});
+on(document, 'keydown', (event) => {
+  if (event.key === 'Escape' && isVisible(bugModal)) closeBugModal();
 });
 on(bugSubmitButton, 'click', () => {
   const report = {
@@ -424,8 +447,7 @@ on(bugSubmitButton, 'click', () => {
   saveBugReport(report);
   setText(bugStatus, 'Bug report saved locally for Atlas retrieval.');
   bugComment.value = '';
-  activeSnip = null;
-  clearSnipTargets();
+  closeBugModal();
   setText(bugSnipTarget, 'No snip selected yet.');
 });
 
@@ -437,6 +459,43 @@ snipTargets.forEach((target) => {
 });
 
 // fresh production build marker
+function runInteractiveAudit() {
+  const required = [
+    ['Bug button', bugButton],
+    ['Bug close button', bugCloseButton],
+    ['Bug submit button', bugSubmitButton],
+    ['Search button', searchButton],
+    ['Quick Escape button', quickEscapeButton],
+    ['Add date button', addDepartureButton],
+    ['Destination pills', destinationButtons],
+    ['Trip type pills', tripTypeButtons],
+    ['Mode pills', modeButtons],
+    ['Date pills', departurePills],
+  ];
+  const missing = required.filter(([, value]) => Array.isArray(value) ? value.length === 0 : !value);
+  window.__voyageInteractiveAudit = {
+    missing: missing.map(([label]) => label),
+    ok: missing.length === 0,
+    timestamp: new Date().toISOString(),
+  };
+  console.log('Voyage interactive audit', window.__voyageInteractiveAudit);
+}
+
+async function runExternalSourceAudit() {
+  const sources = [
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=80',
+    'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80',
+  ];
+  const results = await Promise.all(sources.map(probeImage));
+  externalSourceAudit.images = results;
+  externalSourceAudit.ok = results.every((item) => item.ok);
+  externalSourceAudit.timestamp = new Date().toISOString();
+  window.__voyageSourceAudit = externalSourceAudit;
+  console.log('Voyage external source audit', externalSourceAudit);
+}
+
 function boot() {
   syncDestination();
   syncTripType();
@@ -445,8 +504,10 @@ function boot() {
   renderDeparturePills();
   syncDepartureSummary();
   refreshOutputs();
+  runInteractiveAudit();
   window.__atlasBugReports = JSON.parse(localStorage.getItem('voyageBugReports') || '[]');
   window.__atlasBookingOptions = atlasBookingCache.latest || null;
+  runExternalSourceAudit();
 }
 
 boot();
