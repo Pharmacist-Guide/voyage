@@ -61,6 +61,31 @@
                 <p class="field-note" id="destination-summary">Searching: Anywhere for random, well-priced trips.</p>
               </section>
 
+              <section class="control-card selectable-snip" data-snip-label="Search scope control">
+                <p class="mini-kicker">Search scope</p>
+                <div class="details-grid tight-details">
+                  <label class="field field-wide">
+                    <span>Search query</span>
+                    <input id="search-query" type="text" value="Premium tropical escape" />
+                  </label>
+                  <label class="field">
+                    <span>Trip length min</span>
+                    <input id="length-min" type="text" inputmode="numeric" value="5" />
+                  </label>
+                  <label class="field">
+                    <span>Trip length max</span>
+                    <input id="length-max" type="text" inputmode="numeric" value="10" />
+                  </label>
+                  <label class="field field-range">
+                    <span>Flexibility</span>
+                    <div class="flex-wrap">
+                      <input id="flexibility" type="range" min="0" max="100" value="65" />
+                      <span class="flex-value" id="flexibility-value">Flexible</span>
+                    </div>
+                  </label>
+                </div>
+              </section>
+
               <section class="control-card selectable-snip" data-snip-label="Trip type control">
                 <p class="mini-kicker">Trip type</p>
                 <div class="trip-type-grid" id="trip-type-group" role="group" aria-label="Trip type selectors">

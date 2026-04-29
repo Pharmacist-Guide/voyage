@@ -50,6 +50,12 @@ const selectedDepartureCriteria = [];
 let departureMode = 'date';
 let activeSnip = null;
 const atlasBookingCache = {};
+const on = (element, eventName, handler) => {
+  if (element) element.addEventListener(eventName, handler);
+};
+const setText = (element, text) => {
+  if (element) element.textContent = text;
+};
 
 const today = new Date();
 const needDate = new Date(today);
@@ -64,24 +70,24 @@ selectedDepartureCriteria.push({ type: 'date', date: departureInput.value || toI
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
   const label = active?.dataset.destination ?? 'Anywhere';
-  destinationSummary.textContent = label === 'Anywhere'
+  setText(destinationSummary, label === 'Anywhere'
     ? 'Searching: Anywhere for random, well-priced trips.'
-    : `Searching: ${label} trips with a flexible, curated feel.`;
+    : `Searching: ${label} trips with a flexible, curated feel.`);
 };
 
 const syncTripType = () => {
   const active = tripTypeButtons.find((button) => button.classList.contains('is-active'));
-  tripTypeSummary.textContent = `Trip type: ${active?.dataset.tripType ?? 'Flight + Hotel'}.`;
+  setText(tripTypeSummary, `Trip type: ${active?.dataset.tripType ?? 'Flight + Hotel'}.`);
 };
 
 const syncDepartureSummary = () => {
   if (!selectedDepartureCriteria.length) {
-    departureSummary.textContent = 'No departure criteria added yet.';
+    setText(departureSummary, 'No departure criteria added yet.');
     return;
   }
-  departureSummary.textContent = `Selected departure criteria: ${selectedDepartureCriteria
+  setText(departureSummary, `Selected departure criteria: ${selectedDepartureCriteria
     .map((item) => (item.type === 'range' ? `${formatSelectedDate(item.start)} - ${formatSelectedDate(item.end)}` : formatSelectedDate(item.date)))
-    .join(', ')}.`;
+    .join(', ')}.`);
 };
 
 const renderDeparturePills = () => {
@@ -95,7 +101,7 @@ const renderDeparturePills = () => {
       selectedDepartureCriteria.splice(index, 1);
       renderDeparturePills();
       syncDepartureSummary();
-      searchStatus.textContent = buildSearchSummary();
+      setText(searchStatus, buildSearchSummary());
       renderTripResults();
     });
     departurePills.appendChild(pill);
@@ -116,7 +122,7 @@ const addDepartureCriteria = () => {
   }
   renderDeparturePills();
   syncDepartureSummary();
-  searchStatus.textContent = buildSearchSummary();
+  setText(searchStatus, buildSearchSummary());
   renderTripResults();
 };
 
@@ -285,9 +291,9 @@ const renderTripResults = () => {
   if (atlas.bundles[1].price < atlas.directBooking.price) tripResults.appendChild(pricelineCard);
 
   if (cheaperBundle) {
-    tripResultsSummary.textContent = `${cheaperBundle.vendor} bundle is currently cheaper than direct in this Atlas placeholder comparison.`;
+    setText(tripResultsSummary, `${cheaperBundle.vendor} bundle is currently cheaper than direct in this Atlas placeholder comparison.`);
   } else {
-    tripResultsSummary.textContent = 'Direct booking is currently the best option in this Atlas placeholder comparison.';
+    setText(tripResultsSummary, 'Direct booking is currently the best option in this Atlas placeholder comparison.');
   }
 };
 
@@ -300,7 +306,7 @@ const setDepartureMode = (mode) => {
 const openBugModal = () => {
   bugModal.classList.remove('hidden');
   bugModal.setAttribute('aria-hidden', 'false');
-  bugStatus.textContent = activeSnip ? 'Snip selected. Add your note and submit.' : 'Click a card or control behind the panel to select a snip target.';
+  setText(bugStatus, activeSnip ? 'Snip selected. Add your note and submit.' : 'Click a card or control behind the panel to select a snip target.');
 };
 
 const closeBugModal = () => {
@@ -323,7 +329,7 @@ const setActiveSnip = (element) => {
   element.classList.add('is-snippet-target');
   activeSnip = serializeSnip(element);
   bugSnipTarget.textContent = `Selected: ${activeSnip.label}. Snippet: ${activeSnip.text}`;
-  bugStatus.textContent = 'Snip target captured. Add a comment and submit.';
+  setText(bugStatus, 'Snip target captured. Add a comment and submit.');
 };
 
 const saveBugReport = (report) => {
@@ -336,14 +342,14 @@ const saveBugReport = (report) => {
 };
 
 const refreshOutputs = () => {
-  searchStatus.textContent = buildSearchSummary();
-  quickEscapeStatus.textContent = buildQuickEscape();
-  goalResults.textContent = buildGoalCheck();
+  setText(searchStatus, buildSearchSummary());
+  setText(quickEscapeStatus, buildQuickEscape());
+  setText(goalResults, buildGoalCheck());
   renderTripResults();
 };
 
 destinationButtons.forEach((button) => {
-  button.addEventListener('click', () => {
+  on(button, 'click', () => {
     destinationButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncDestination();
@@ -351,7 +357,7 @@ destinationButtons.forEach((button) => {
   });
 });
 tripTypeButtons.forEach((button) => {
-  button.addEventListener('click', () => {
+  on(button, 'click', () => {
     tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
     button.classList.add('is-active');
     syncTripType();
@@ -359,51 +365,51 @@ tripTypeButtons.forEach((button) => {
   });
 });
 modeButtons.forEach((button) => {
-  button.addEventListener('click', () => {
+  on(button, 'click', () => {
     setDepartureMode(button.dataset.mode === 'range' ? 'range' : 'date');
   });
 });
 
-searchButton.addEventListener('click', () => {
+on(searchButton, 'click', () => {
   refreshOutputs();
 });
 quickEscapeButton.addEventListener('click', () => {
-  quickEscapeStatus.textContent = buildQuickEscape();
+  setText(quickEscapeStatus, buildQuickEscape());
 });
-addDepartureButton.addEventListener('click', addDepartureCriteria);
-departureInput.addEventListener('keydown', (event) => {
+on(addDepartureButton, 'click', addDepartureCriteria);
+on(departureInput, 'keydown', (event) => {
   if (event.key === 'Enter') {
     event.preventDefault();
     addDepartureCriteria();
   }
 });
-departureEndInput.addEventListener('keydown', (event) => {
+on(departureEndInput, 'keydown', (event) => {
   if (event.key === 'Enter') {
     event.preventDefault();
     addDepartureCriteria();
   }
 });
 [lengthMin, lengthMax].forEach((input) => {
-  input.addEventListener('change', normalizeRange);
-  input.addEventListener('blur', normalizeRange);
+  on(input, 'change', normalizeRange);
+  on(input, 'blur', normalizeRange);
 });
-flexibility.addEventListener('input', () => {
+on(flexibility, 'input', () => {
   updateFlexibilityLabel();
-  goalResults.textContent = buildGoalCheck();
+  setText(goalResults, buildGoalCheck());
   renderTripResults();
 });
 [searchQuery, maxBudget, travelerCount, preferredPorts, cruiseLines, offDays, goalDestination, goalPto, needToGo, canGo].forEach((input) => {
-  input.addEventListener('input', () => {
+  on(input, 'input', () => {
     refreshOutputs();
   });
 });
 
-bugButton.addEventListener('click', openBugModal);
-bugCloseButton.addEventListener('click', closeBugModal);
-bugModal.addEventListener('click', (event) => {
+on(bugButton, 'click', openBugModal);
+on(bugCloseButton, 'click', closeBugModal);
+on(bugModal, 'click', (event) => {
   if (event.target === bugModal) closeBugModal();
 });
-bugSubmitButton.addEventListener('click', () => {
+on(bugSubmitButton, 'click', () => {
   const report = {
     createdAt: new Date().toISOString(),
     snip: activeSnip,
@@ -412,19 +418,19 @@ bugSubmitButton.addEventListener('click', () => {
     url: window.location.href,
   };
   if (!report.snip || !report.comment) {
-    bugStatus.textContent = 'Select a snip target and add a comment before submitting.';
+    setText(bugStatus, 'Select a snip target and add a comment before submitting.');
     return;
   }
   saveBugReport(report);
-  bugStatus.textContent = 'Bug report saved locally for Atlas retrieval.';
+  setText(bugStatus, 'Bug report saved locally for Atlas retrieval.');
   bugComment.value = '';
   activeSnip = null;
   clearSnipTargets();
-  bugSnipTarget.textContent = 'No snip selected yet.';
+  setText(bugSnipTarget, 'No snip selected yet.');
 });
 
 snipTargets.forEach((target) => {
-  target.addEventListener('click', () => {
+  on(target, 'click', () => {
     if (bugModal.classList.contains('hidden')) return;
     setActiveSnip(target);
   });
