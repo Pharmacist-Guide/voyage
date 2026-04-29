@@ -39,19 +39,13 @@
                 <p class="section-label">Search center</p>
                 <h2>Everything the trip needs, in one compact grid.</h2>
               </div>
-              <div class="header-actions">
-                <button class="ghost-button" type="button" id="bug-button">Bug</button>
-                <button class="search-button" type="button" id="search-button">
-                  <span class="search-button-kicker">Deep travel search</span>
-                  <span class="search-button-label">Search Voyage</span>
-                </button>
-              </div>
+              <button class="search-button" type="button" id="search-button">
+                <span class="search-button-kicker">Deep travel search</span>
+                <span class="search-button-label">Search Voyage</span>
+              </button>
             </div>
 
-            <div class="status-row">
-              <div class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</div>
-              <div class="bug-status" id="bug-status">Bug reports stay local until you submit one.</div>
-            </div>
+            <div class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</div>
 
             <div class="control-grid">
               <section class="control-card">
@@ -78,37 +72,29 @@
               </section>
 
               <section class="control-card control-card-wide">
-                <p class="mini-kicker">Date window</p>
-                <div class="date-grid compact-grid">
-                  <label class="field">
-                    <span>Need to go</span>
-                    <input id="need-to-go" type="date" />
-                  </label>
-                  <label class="field">
-                    <span>Can go</span>
-                    <input id="can-go" type="date" />
-                  </label>
-                  <label class="field field-range">
-                    <span>Flexibility</span>
-                    <div class="flex-wrap">
-                      <input id="flexibility" type="range" min="0" max="100" value="65" />
-                      <span class="flex-value" id="flexibility-value">Flexible</span>
-                    </div>
-                  </label>
-                </div>
-              </section>
-
-              <section class="control-card control-card-wide">
                 <div class="row-head">
-                  <p class="mini-kicker">Departure dates</p>
-                  <span class="mini-copy">Add as many specific dates as needed.</span>
+                  <p class="mini-kicker">Departure criteria</p>
+                  <span class="mini-copy">Add individual dates or date ranges.</span>
                 </div>
-                <div class="add-date-row">
-                  <input id="departure-date-input" type="date" />
-                  <button class="mini-button" type="button" id="add-departure-date">Add date</button>
+                <div class="departure-mode-row">
+                  <div class="mode-toggle" role="tablist" aria-label="Departure input mode">
+                    <button class="mode-pill is-active" type="button" data-mode="date">Specific date</button>
+                    <button class="mode-pill" type="button" data-mode="range">Date range</button>
+                  </div>
                 </div>
-                <div class="date-pills" id="departure-pills" aria-label="Selected departure dates"></div>
-                <p class="field-note" id="departure-summary">No departure dates added yet.</p>
+                <div class="departure-form" id="departure-date-form">
+                  <label class="field">
+                    <span>Date</span>
+                    <input id="departure-date-input" type="date" />
+                  </label>
+                  <label class="field departure-range-field hidden" id="departure-end-field">
+                    <span>Range end</span>
+                    <input id="departure-end-input" type="date" />
+                  </label>
+                  <button class="mini-button" type="button" id="add-departure-date">Add</button>
+                </div>
+                <div class="date-pills" id="departure-pills" aria-label="Selected departure criteria"></div>
+                <p class="field-note" id="departure-summary">No departure criteria added yet.</p>
               </section>
 
               <section class="control-card control-card-wide">
@@ -209,36 +195,6 @@
                 <p class="destination-detail">Big landscapes, sharp air, and room to move.</p>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section class="bug-panel card" id="bug-panel" aria-hidden="true">
-          <div class="bug-panel-head">
-            <div>
-              <p class="section-label">Bug / edit report</p>
-              <h2>Snip a section and describe the change.</h2>
-            </div>
-            <button class="ghost-button" type="button" id="close-bug-panel">Close</button>
-          </div>
-          <p class="mini-copy bug-panel-copy">
-            Drag over the page preview to select a region. The report stores the selected snippet, comment, and coordinates locally for Atlas retrieval.
-          </p>
-          <div class="bug-capture-shell">
-            <div class="bug-preview" id="bug-preview">
-              <div class="bug-preview-overlay" id="bug-selection-overlay"></div>
-              <div class="bug-preview-hint" id="bug-preview-hint">Drag to select a page section</div>
-            </div>
-            <div class="bug-form">
-              <label class="field bug-comment-field">
-                <span>Comment</span>
-                <textarea id="bug-comment" rows="5" placeholder="Describe the desired change..."></textarea>
-              </label>
-              <button class="search-button bug-submit" type="button" id="bug-submit">
-                <span class="search-button-kicker">Capture report</span>
-                <span class="search-button-label">Submit snippet</span>
-              </button>
-              <p class="bug-status" id="bug-panel-status">No snippet selected yet.</p>
-            </div>
           </div>
         </section>
       </main>
