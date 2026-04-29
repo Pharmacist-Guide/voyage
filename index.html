@@ -39,7 +39,7 @@
             <h2>Start with the question, then narrow the trip.</h2>
             <p class="hero-intro">
               Search is the center of the home page, with enough flexibility to explore destination,
-              timing, and price without losing the calm feel.
+              timing, price, and trip details without losing the calm feel.
             </p>
 
             <form class="search-panel" action="#" onsubmit="return false">
@@ -55,7 +55,7 @@
                 <p class="field-note" id="destination-summary">Searching: Anywhere for random, well-priced trips.</p>
               </div>
 
-              <div class="search-grid">
+              <div class="search-grid search-grid-tight">
                 <label class="search-field">
                   <span>Trip length range</span>
                   <input id="length-min" type="text" inputmode="numeric" placeholder="7" value="7" />
@@ -91,6 +91,47 @@
                 </div>
 
                 <p class="field-note" id="departure-summary">Selected departure dates: Fri, May 8.</p>
+              </div>
+
+              <div class="details-card">
+                <div class="details-header">
+                  <div>
+                    <p class="mini-kicker">Trip detail customizations</p>
+                    <h3>Dial in the trip before searching.</h3>
+                  </div>
+                  <p class="mini-copy">Helpful filters for more precise discovery.</p>
+                </div>
+
+                <div class="details-grid">
+                  <label class="search-field">
+                    <span>Max Budget</span>
+                    <input id="max-budget" type="text" inputmode="numeric" placeholder="$2,500" value="$2,500" />
+                    <small>Total trip budget target</small>
+                  </label>
+                  <label class="search-field">
+                    <span>Number of Travelers</span>
+                    <input id="traveler-count" type="text" inputmode="numeric" placeholder="2" value="2" />
+                    <small>Adults, companions, or group size</small>
+                  </label>
+                  <label class="search-field search-field-wide">
+                    <span>Preferred Ports / Destinations</span>
+                    <input id="preferred-ports" type="text" placeholder="Miami, Barcelona, San Juan" value="Miami, Barcelona, San Juan" />
+                    <small>Ports, airports, or destination ideas</small>
+                  </label>
+                  <label class="search-field search-field-wide">
+                    <span>Cruise Line Preferences</span>
+                    <input id="cruise-lines" type="text" placeholder="Celebrity, Princess, Holland America" value="Celebrity, Princess, Holland America" />
+                    <small>Lines that fit the travel style</small>
+                  </label>
+                </div>
+              </div>
+
+              <div class="search-actions">
+                <button class="search-button" type="button" id="search-button">
+                  <span class="search-button-kicker">Deep travel search</span>
+                  <span class="search-button-label">Search Voyage</span>
+                </button>
+                <p class="search-status" id="search-status">Ready to search across flexible dates, budgets, and destinations.</p>
               </div>
             </form>
           </div>

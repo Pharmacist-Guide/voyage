@@ -2,9 +2,15 @@ const destinationButtons = Array.from(document.querySelectorAll('.destination-pi
 const dateButtons = Array.from(document.querySelectorAll('.date-pill'));
 const destinationSummary = document.getElementById('destination-summary');
 const departureSummary = document.getElementById('departure-summary');
+const searchStatus = document.getElementById('search-status');
 const lengthMin = document.getElementById('length-min');
 const lengthMax = document.getElementById('length-max');
 const searchQuery = document.getElementById('search-query');
+const maxBudget = document.getElementById('max-budget');
+const travelerCount = document.getElementById('traveler-count');
+const preferredPorts = document.getElementById('preferred-ports');
+const cruiseLines = document.getElementById('cruise-lines');
+const searchButton = document.getElementById('search-button');
 
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
@@ -32,6 +38,25 @@ const normalizeRange = () => {
   }
 };
 
+const buildSearchSummary = () => {
+  const destination = destinationButtons.find((button) => button.classList.contains('is-active'))?.dataset.destination ?? 'Anywhere';
+  const dates = dateButtons.filter((button) => button.classList.contains('is-active')).map((button) => button.textContent.trim());
+  const minDays = lengthMin.value.trim() || '7';
+  const maxDays = lengthMax.value.trim() || '14';
+  const query = searchQuery.value.trim() || 'Well-priced, inspiring trips';
+  const budget = maxBudget.value.trim() || '$2,500';
+  const travelers = travelerCount.value.trim() || '2';
+  const ports = preferredPorts.value.trim() || 'Flexible ports';
+  const lines = cruiseLines.value.trim() || 'Flexible cruise lines';
+
+  return [
+    `Searching ${destination.toLowerCase()} for ${query.toLowerCase()}.`,
+    `Dates: ${dates.slice(0, 3).join(', ')}${dates.length > 3 ? '…' : ''}.`,
+    `Length: ${minDays}-${maxDays} days · Budget: ${budget} · Travelers: ${travelers}.`,
+    `Ports: ${ports}. Lines: ${lines}.`,
+  ].join(' ');
+};
+
 destinationButtons.forEach((button) => {
   button.addEventListener('click', () => {
     destinationButtons.forEach((item) => item.classList.remove('is-active'));
@@ -55,9 +80,10 @@ dateButtons.forEach((button) => {
   input.addEventListener('blur', normalizeRange);
 });
 
-searchQuery.addEventListener('input', () => {
-  searchQuery.dataset.value = searchQuery.value;
+searchButton.addEventListener('click', () => {
+  searchStatus.textContent = buildSearchSummary();
 });
 
 syncDestination();
 syncDates();
+searchStatus.textContent = buildSearchSummary();

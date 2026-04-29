@@ -61,7 +61,8 @@ body::before {
 .section-header h2,
 .hero-content h2,
 .hero-media-caption h2,
-.departure-header h3 {
+.departure-header h3,
+.details-header h3 {
   margin: 0;
   line-height: 0.98;
   letter-spacing: -0.04em;
@@ -98,7 +99,7 @@ body::before {
 
 .hero-media {
   position: relative;
-  min-height: 680px;
+  min-height: 760px;
   overflow: hidden;
 }
 
@@ -150,7 +151,7 @@ body::before {
 
 .hero-content h2 {
   font-size: clamp(2rem, 4vw, 3.8rem);
-  max-width: 10ch;
+  max-width: 11ch;
   margin-bottom: 14px;
 }
 
@@ -221,8 +222,7 @@ body::before {
 
 .destination-pill:hover,
 .date-pill:hover,
-.primary-link:hover,
-.secondary-link:hover {
+.search-button:hover {
   transform: translateY(-1px);
 }
 
@@ -237,6 +237,10 @@ body::before {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.search-grid-tight {
+  align-items: stretch;
 }
 
 .search-field input {
@@ -257,14 +261,16 @@ body::before {
   grid-column: span 1;
 }
 
-.departure-card {
+.departure-card,
+.details-card {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.58);
   border-radius: 24px;
   padding: 18px;
 }
 
-.departure-header {
+.departure-header,
+.details-header {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -272,8 +278,64 @@ body::before {
   margin-bottom: 14px;
 }
 
-.departure-header h3 {
+.departure-header h3,
+.details-header h3 {
   font-size: 1.4rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.search-field-wide {
+  grid-column: span 2;
+}
+
+.search-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.search-button {
+  border: 0;
+  border-radius: 22px;
+  padding: 16px 20px;
+  cursor: pointer;
+  text-align: left;
+  color: white;
+  background:
+    linear-gradient(180deg, rgba(70, 106, 255, 0.95), rgba(32, 61, 201, 0.98));
+  box-shadow: 0 18px 32px rgba(53, 93, 255, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  min-width: 230px;
+}
+
+.search-button-kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.search-button-label {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.search-status {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .discovery {
@@ -374,13 +436,20 @@ body::before {
     min-height: 420px;
   }
 
-  .search-grid {
+  .search-grid,
+  .details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .search-field-wide {
+    grid-column: span 1;
   }
 
   .section-header,
   .topbar,
-  .departure-header {
+  .departure-header,
+  .details-header,
+  .search-actions {
     flex-direction: column;
     align-items: start;
   }
@@ -403,5 +472,9 @@ body::before {
 
   .hero-media {
     min-height: 340px;
+  }
+
+  .search-button {
+    width: 100%;
   }
 }

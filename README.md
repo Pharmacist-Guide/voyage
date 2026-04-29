@@ -8,6 +8,7 @@ Voyage is a separate travel-planning site for Zachary.
 - Anywhere destination option for open-ended, well-priced trips
 - Trip length range input
 - Multiple possible departure-date selections
+- Trip detail fields for budget, travelers, ports, and cruise line preferences
 - Minimalist travel imagery and discovery board
 
 ## Local preview
