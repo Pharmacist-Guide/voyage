@@ -38,10 +38,9 @@ canGo.value = toISODate(canDate);
 const syncDestination = () => {
   const active = destinationButtons.find((button) => button.classList.contains('is-active'));
   const label = active?.dataset.destination ?? 'Anywhere';
-  destinationSummary.textContent =
-    label === 'Anywhere'
-      ? 'Searching: Anywhere for random, well-priced trips.'
-      : `Searching: ${label} trips with a flexible, curated feel.`;
+  destinationSummary.textContent = label === 'Anywhere'
+    ? 'Searching: Anywhere for random, well-priced trips.'
+    : `Searching: ${label} trips with a flexible, curated feel.`;
 };
 
 const syncTripType = () => {
@@ -103,35 +102,45 @@ const buildGoalCheck = () => {
   return `Goal search for ${destination}: ${pto} PTO days, ${windowText}, ${overlapState}. Live Meridian / Atlas calendar overlap checks need the connected calendar layer.`;
 };
 
-destinationButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    destinationButtons.forEach((item) => item.classList.remove('is-active'));
-    button.classList.add('is-active');
-    syncDestination();
-  });
-});
+function updateAll() {
+  syncDestination();
+  syncTripType();
+  syncDates();
+  updateFlexibilityLabel();
+  searchStatus.textContent = buildSearchSummary();
+  quickEscapeStatus.textContent = buildQuickEscape();
+  goalResults.textContent = buildGoalCheck();
+}
 
-tripTypeButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
-    button.classList.add('is-active');
-    syncTripType();
-  });
-});
-
-dateButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    button.classList.toggle('is-active');
-    if (dateButtons.every((item) => !item.classList.contains('is-active'))) button.classList.add('is-active');
-    syncDates();
-  });
-});
-
+destinationButtons.forEach((button) => button.addEventListener('click', () => {
+  destinationButtons.forEach((item) => item.classList.remove('is-active'));
+  button.classList.add('is-active');
+  syncDestination();
+  searchStatus.textContent = buildSearchSummary();
+}));
+tripTypeButtons.forEach((button) => button.addEventListener('click', () => {
+  tripTypeButtons.forEach((item) => item.classList.remove('is-active'));
+  button.classList.add('is-active');
+  syncTripType();
+  searchStatus.textContent = buildSearchSummary();
+}));
+dateButtons.forEach((button) => button.addEventListener('click', () => {
+  button.classList.toggle('is-active');
+  if (dateButtons.every((item) => !item.classList.contains('is-active'))) button.classList.add('is-active');
+  syncDates();
+  searchStatus.textContent = buildSearchSummary();
+}));
 [lengthMin, lengthMax].forEach((input) => {
   input.addEventListener('change', normalizeRange);
   input.addEventListener('blur', normalizeRange);
+  input.addEventListener('input', () => { searchStatus.textContent = buildSearchSummary(); });
 });
-
+[searchQuery, maxBudget, travelerCount, preferredPorts, cruiseLines, goalDestination, goalPto, needToGo, canGo].forEach((input) => {
+  input.addEventListener('input', () => {
+    searchStatus.textContent = buildSearchSummary();
+    goalResults.textContent = buildGoalCheck();
+  });
+});
 flexibility.addEventListener('input', () => {
   updateFlexibilityLabel();
   goalResults.textContent = buildGoalCheck();
@@ -142,20 +151,5 @@ searchButton.addEventListener('click', () => {
 quickEscapeButton.addEventListener('click', () => {
   quickEscapeStatus.textContent = buildQuickEscape();
 });
-[goalDestination, goalPto, needToGo, canGo].forEach((input) => {
-  input.addEventListener('input', () => {
-    goalResults.textContent = buildGoalCheck();
-  });
-});
 
-function actionLoop() {
-  syncDestination();
-  syncTripType();
-  syncDates();
-  updateFlexibilityLabel();
-  searchStatus.textContent = buildSearchSummary();
-  quickEscapeStatus.textContent = buildQuickEscape();
-  goalResults.textContent = buildGoalCheck();
-}
-
-actionLoop();
+updateAll();

@@ -4,7 +4,7 @@ Voyage is a separate travel-planning site for Zachary.
 
 ## What’s in this build
 
-- Hero-centered search experience
+- Compact hero control center
 - Anywhere destination option for open-ended, well-priced trips
 - Trip type selectors for flight, cruise, or combined planning
 - Manual date window inputs with flexibility control
